@@ -51,4 +51,71 @@
   .input-brutal {
     @apply w-full border-2 border-[#172a45] bg-[#fffdf7] px-4 py-3 text-sm font-medium shadow-[2px_2px_0_#172a45] transition-all duration-150 placeholder:text-gray-400 focus:outline-none focus:shadow-[4px_4px_0_#e63946] focus:translate-x-[-2px] focus:translate-y-[-2px];
   }
+
+  .theme-toggle {
+    @apply inline-flex h-10 items-center justify-center gap-2 border-2 border-[#172a45] bg-[#f6c445] px-3 text-xs font-bold uppercase tracking-[0.08em] text-[#172a45] shadow-[2px_2px_0_#172a45] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none;
+  }
+}
+
+html.dark body {
+  background-color: #101820;
+  background-image: linear-gradient(90deg, transparent 95%, rgba(246, 196, 69, 0.12) 95%), linear-gradient(transparent 95%, rgba(246, 196, 69, 0.12) 95%);
+  color: #fffdf7;
+}
+
+html.dark nav {
+  background: #172a45 !important;
+  border-color: #f6c445 !important;
+}
+
+html.dark nav .text-\[\#172a45\] {
+  color: #fffdf7 !important;
+}
+
+html.dark .card-brutal,
+html.dark .input-brutal {
+  background: #172a45;
+  border-color: #f6c445;
+  box-shadow: 6px 6px 0 #f6c445;
+  color: #fffdf7;
+}
+
+html.dark .input-brutal {
+  box-shadow: 2px 2px 0 #f6c445;
+}
+
+html.dark .theme-toggle {
+  background: #e63946;
+  border-color: #fffdf7;
+  box-shadow: 2px 2px 0 #fffdf7;
+  color: #fffdf7;
+}
+
+html.dark .bg-white,
+html.dark .bg-gray-50,
+html.dark .bg-gray-100,
+html.dark .bg-\[\#fffdf7\] {
+  background-color: #1d2f4c !important;
+}
+
+html.dark .text-black,
+html.dark .text-gray-600,
+html.dark .text-gray-500,
+html.dark .text-gray-400 {
+  color: #fffdf7 !important;
+}
+
+html.dark .border-black,
+html.dark .border-gray-300,
+html.dark .border-gray-400,
+html.dark .border-\[\#172a45\] {
+  border-color: #f6c445 !important;
+}
+
+html.dark .shadow-brutal-sm,
+html.dark .shadow-brutal,
+html.dark .shadow-\[2px_2px_0_\#172a45\],
+html.dark .shadow-\[4px_4px_0_\#172a45\],
+html.dark .shadow-\[6px_6px_0_\#172a45\] {
+  box-shadow: 4px 4px 0 #f6c445 !important;
 }

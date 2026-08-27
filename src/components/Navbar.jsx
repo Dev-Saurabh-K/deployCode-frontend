@@ -1,5 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import ThemeToggle from "./ThemeToggle";
 import { Rocket, LogOut } from "lucide-react";
 
 export default function Navbar() {
@@ -8,6 +9,12 @@ export default function Navbar() {
 
   return (
     <nav className="fixed top-0 z-50 w-full border-b-2 border-[#172a45] bg-[#fffdf7]">
+      <div className="border-b-2 border-[#172a45] bg-[#e63946] px-4 py-1.5 text-center text-xs font-bold uppercase tracking-[0.08em] text-white">
+        Support the developer · Contact for donations: {" "}
+        <a href="tel:6203321011" className="underline decoration-2 underline-offset-2 hover:text-[#f6c445]">
+          6203321011
+        </a>
+      </div>
       <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4 sm:px-6">
         <Link to="/" className="flex items-center gap-2.5 group">
           <div className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-[#172a45] bg-[#e63946] shadow-[2px_2px_0_#172a45] transition-all group-hover:translate-x-[2px] group-hover:translate-y-[2px] group-hover:shadow-none">
@@ -19,6 +26,7 @@ export default function Navbar() {
         </Link>
 
         <div className="flex items-center gap-3">
+          <ThemeToggle />
           {isAuthenticated ? (
             <button
               onClick={logout}
@@ -47,7 +55,7 @@ export default function Navbar() {
               </Link>
             </>
           )}
-        </div>
+      </div>
       </div>
     </nav>
   );

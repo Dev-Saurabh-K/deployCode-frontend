@@ -12,6 +12,7 @@ import {
 import {
   Box,
   Code2,
+  ExternalLink,
   GitBranch,
   Loader2,
   Rocket,
@@ -216,7 +217,7 @@ export default function DeployPage() {
 
             <form onSubmit={handleSubmit} className="space-y-5">
               <InputField
-                label="Image Name"
+                label="App Name"
                 id="imageName"
                 value={imageName}
                 onChange={(e) => setImageName(e.target.value)}
@@ -268,7 +269,7 @@ export default function DeployPage() {
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="mt-0.5 inline-block h-4 w-4 rounded border-2 border-black bg-lime-400 text-center text-[10px] font-bold leading-3">✓</span>
-                  Image name must be unique across all deployments
+                  App name must be unique across all deployments
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="mt-0.5 inline-block h-4 w-4 rounded border-2 border-black bg-lime-400 text-center text-[10px] font-bold leading-3">✓</span>
@@ -317,17 +318,36 @@ export default function DeployPage() {
               ) : (
                 <div className="max-h-[26rem] space-y-3 overflow-y-auto pr-2">
                   {projects.map((project) => (
-                    <div key={project.id} className="flex items-center justify-between gap-3 rounded-xl border-2 border-black bg-white p-3 shadow-brutal-sm">
-                      <div className="min-w-0">
-                        <p className="truncate font-bold text-black">{project.image_name}</p>
-                        <p className="text-xs font-medium capitalize text-gray-500">{project.status}</p>
+                    <div
+                      key={project.id}
+                      className={`relative flex items-center justify-between gap-3 rounded-xl border-2 border-black bg-white p-3 shadow-brutal-sm ${
+                        project.domain ? "transition-transform hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none" : ""
+                      }`}
+                    >
+                      {project.domain && (
+                        <a
+                          href={`https://${project.domain}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={`Open ${project.image_name}`}
+                          className="absolute inset-0 z-0"
+                        />
+                      )}
+                      <div className="relative z-10 min-w-0 pointer-events-none">
+                        <div className="flex items-center gap-1.5">
+                          <p className="truncate font-bold text-black">{project.image_name}</p>
+                          {project.domain && <ExternalLink className="h-3.5 w-3.5 shrink-0 text-blue-700" strokeWidth={2.5} />}
+                        </div>
+                        <p className="truncate text-xs font-medium capitalize text-gray-500">
+                          {project.domain ? project.domain : project.status}
+                        </p>
                       </div>
                       {!INACTIVE_STATUSES.includes(project.status) && (
                         <button
                           type="button"
                           onClick={() => handleDelete(project)}
                           disabled={deletingId === project.id}
-                          className="btn-brutal shrink-0 bg-red-300 px-3 py-2 text-xs text-black hover:bg-red-200 disabled:cursor-not-allowed disabled:opacity-50"
+                          className="btn-brutal relative z-10 shrink-0 bg-red-300 px-3 py-2 text-xs text-black hover:bg-red-200 disabled:cursor-not-allowed disabled:opacity-50"
                         >
                           {deletingId === project.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
                           Delete

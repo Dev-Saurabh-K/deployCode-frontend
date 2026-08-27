@@ -98,7 +98,7 @@ export default function DeployStatusCard({ deployment, onReset }) {
 
       {/* Deployment Info */}
       <div className="mb-6 space-y-2 rounded-xl border-2 border-black bg-white p-4 shadow-brutal-sm">
-        <InfoRow label="Image" value={deployment.image_name} />
+        <InfoRow label="App Name" value={deployment.image_name} />
         <InfoRow label="Port" value={deployment.port} />
         <InfoRow label="Repo" value={deployment.repo_url} isUrl />
       </div>
