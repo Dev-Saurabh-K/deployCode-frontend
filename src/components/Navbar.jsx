@@ -7,14 +7,14 @@ export default function Navbar() {
   const location = useLocation();
 
   return (
-    <nav className="fixed top-0 z-50 w-full border-b-3 border-black bg-white">
+    <nav className="fixed top-0 z-50 w-full border-b-2 border-[#172a45] bg-[#fffdf7]">
       <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4 sm:px-6">
         <Link to="/" className="flex items-center gap-2.5 group">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg border-2 border-black bg-lime-400 shadow-brutal-sm transition-all group-hover:translate-x-[2px] group-hover:translate-y-[2px] group-hover:shadow-none">
-            <Rocket className="h-4 w-4 text-black" strokeWidth={2.5} />
+          <div className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-[#172a45] bg-[#e63946] shadow-[2px_2px_0_#172a45] transition-all group-hover:translate-x-[2px] group-hover:translate-y-[2px] group-hover:shadow-none">
+            <Rocket className="h-4 w-4 text-white" strokeWidth={2.5} />
           </div>
-          <span className="text-xl font-bold tracking-tight text-black">
-            cploy
+          <span className="text-xl font-black tracking-tight text-[#172a45]">
+            deployCode
           </span>
         </Link>
 
@@ -22,7 +22,7 @@ export default function Navbar() {
           {isAuthenticated ? (
             <button
               onClick={logout}
-              className="btn-brutal border-red-500 bg-red-100 text-red-600 shadow-brutal-red hover:bg-red-200 py-2 px-4"
+              className="btn-brutal border-[#172a45] bg-[#e63946] py-2 px-4 text-white hover:bg-[#c92f3b]"
             >
               <LogOut className="h-3.5 w-3.5" strokeWidth={2.5} />
               Logout
@@ -31,17 +31,17 @@ export default function Navbar() {
             <>
               <Link
                 to="/login"
-                className={`rounded-xl border-2 border-black px-4 py-2 text-sm font-bold uppercase tracking-wide transition-all ${
+                className={`border-2 border-[#172a45] px-4 py-2 text-sm font-bold uppercase tracking-wide transition-all ${
                   location.pathname === "/login"
-                    ? "bg-yellow-300 shadow-brutal-sm"
-                    : "bg-white hover:bg-gray-100"
+                    ? "bg-[#f6c445] shadow-[2px_2px_0_#172a45]"
+                    : "bg-[#fffdf7] hover:bg-[#f6c445]"
                 }`}
               >
                 Login
               </Link>
               <Link
                 to="/register"
-                className="btn-brutal bg-lime-400 text-black hover:bg-lime-300 py-2 px-4"
+                className="btn-brutal bg-[#1d5fa7] py-2 px-4 text-white hover:bg-[#174f8c]"
               >
                 Register
               </Link>

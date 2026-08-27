@@ -11,15 +11,26 @@ import {
 } from "../api/deploy";
 import {
   Box,
+  Code2,
   GitBranch,
   Loader2,
   Rocket,
+  Server,
+  Sparkles,
   Trash2,
   Zap,
 } from "lucide-react";
 
 const DEPLOYMENT_LIMIT = 2;
 const INACTIVE_STATUSES = ["failed", "deleted"];
+const COMING_SOON_STACKS = [
+  { name: "Next.js", type: "Frontend", icon: Code2, color: "bg-blue-200" },
+  { name: "Vue.js", type: "Frontend", icon: Code2, color: "bg-emerald-200" },
+  { name: "Node.js", type: "Backend", icon: Server, color: "bg-lime-300" },
+  { name: "Express.js", type: "Backend", icon: Server, color: "bg-yellow-300" },
+  { name: "FastAPI", type: "Backend", icon: Server, color: "bg-cyan-300" },
+  { name: "More stacks", type: "Frontend & backend", icon: Sparkles, color: "bg-pink-200" },
+];
 
 export default function DeployPage() {
   const [imageName, setImageName] = useState("");
@@ -187,7 +198,7 @@ export default function DeployPage() {
           </div>
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-2">
+        <div className="grid items-start gap-8 lg:grid-cols-2">
           {/* Deploy Form */}
           <div className="card-brutal p-6">
             <h2 className="mb-6 flex items-center gap-2 text-lg font-bold text-black">
@@ -272,7 +283,7 @@ export default function DeployPage() {
           </div>
 
           {/* Status Card */}
-          <div className="space-y-5">
+          <div className="min-w-0 space-y-5">
             {deployment ? (
               <DeployStatusCard
                 deployment={deployment}
@@ -294,7 +305,7 @@ export default function DeployPage() {
               </div>
             )}
 
-            <div className="card-brutal p-5">
+            <div className="card-brutal overflow-hidden p-5">
               <div className="mb-4 flex items-center justify-between gap-3">
                 <h2 className="text-lg font-bold text-black">Your projects</h2>
                 <span className="text-xs font-bold uppercase tracking-widest text-gray-500">
@@ -304,7 +315,7 @@ export default function DeployPage() {
               {projects.length === 0 && !isLoadingProjects ? (
                 <p className="text-sm font-medium text-gray-500">No projects yet. Your first deployment will appear here.</p>
               ) : (
-                <div className="space-y-3">
+                <div className="max-h-[26rem] space-y-3 overflow-y-auto pr-2">
                   {projects.map((project) => (
                     <div key={project.id} className="flex items-center justify-between gap-3 rounded-xl border-2 border-black bg-white p-3 shadow-brutal-sm">
                       <div className="min-w-0">
@@ -329,6 +340,44 @@ export default function DeployPage() {
             </div>
           </div>
         </div>
+
+        <section className="relative z-0 mt-8 clear-both w-full card-brutal p-6">
+          <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <div className="mb-2 inline-flex items-center gap-2 rounded-lg border-2 border-black bg-pink-200 px-3 py-1 text-xs font-bold uppercase tracking-widest">
+                <Sparkles className="h-3.5 w-3.5" strokeWidth={2.5} />
+                Coming soon
+              </div>
+              <h2 className="text-xl font-bold text-black">More ways to deploy</h2>
+              <p className="mt-1 text-sm font-medium text-gray-600">
+                We’re expanding deployCode beyond Vite + React.
+              </p>
+            </div>
+            <span className="w-fit rounded-lg border-2 border-dashed border-gray-400 bg-gray-100 px-3 py-1.5 text-xs font-bold text-gray-600">
+              Not available yet
+            </span>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {COMING_SOON_STACKS.map((stack) => {
+              const StackIcon = stack.icon;
+              return (
+                <div
+                  key={stack.name}
+                  className="flex items-center gap-3 rounded-xl border-2 border-dashed border-gray-400 bg-gray-50 p-3 opacity-75"
+                >
+                  <div className={`flex h-9 w-9 items-center justify-center rounded-lg border-2 border-black ${stack.color}`}>
+                    <StackIcon className="h-4 w-4" strokeWidth={2.5} />
+                  </div>
+                  <div>
+                    <p className="font-bold text-black">{stack.name}</p>
+                    <p className="text-xs font-medium text-gray-500">{stack.type}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
       </div>
     </div>
   );

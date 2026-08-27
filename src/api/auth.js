@@ -26,15 +26,25 @@ export async function login(username, password) {
     throw { status: res.status, ...data };
   }
 
-  localStorage.setItem("cploy_token", data.access_token);
+  localStorage.setItem("deployCode_token", data.access_token);
   return data;
 }
 
 export function getToken() {
-  return localStorage.getItem("cploy_token");
+  const token = localStorage.getItem("deployCode_token");
+  if (token) return token;
+
+  // Preserve existing signed-in sessions after the product rename.
+  const legacyToken = localStorage.getItem("cploy_token");
+  if (legacyToken) {
+    localStorage.setItem("deployCode_token", legacyToken);
+    localStorage.removeItem("cploy_token");
+  }
+  return legacyToken;
 }
 
 export function removeToken() {
+  localStorage.removeItem("deployCode_token");
   localStorage.removeItem("cploy_token");
 }
 

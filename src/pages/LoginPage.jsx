@@ -25,22 +25,22 @@ export default function LoginPage() {
       {/* Decorative shapes */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <div className="absolute -left-10 top-20 h-32 w-32 rotate-12 rounded-2xl border-2 border-black bg-yellow-300 opacity-30" />
-        <div className="absolute -right-5 top-40 h-24 w-24 -rotate-6 rounded-full border-2 border-black bg-pink-300 opacity-30" />
+        <div className="absolute -right-5 top-40 h-24 w-24 -rotate-6 rounded-full border-2 border-black bg-red-400 opacity-30" />
         <div className="absolute bottom-20 left-1/4 h-20 w-20 rotate-45 rounded-xl border-2 border-black bg-blue-300 opacity-20" />
-        <div className="absolute bottom-32 right-1/3 h-16 w-16 rounded-full border-2 border-black bg-lime-400 opacity-25" />
+        <div className="absolute bottom-32 right-1/3 h-16 w-16 rounded-full border-2 border-black bg-yellow-300 opacity-25" />
       </div>
 
       <div className="relative w-full max-w-md">
         {/* Logo */}
         <div className="mb-8 text-center">
-          <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl border-2 border-black bg-lime-400 shadow-brutal">
-            <Rocket className="h-7 w-7 text-black" strokeWidth={2.5} />
+          <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-full border-2 border-[#172a45] bg-[#1d5fa7] shadow-[4px_4px_0_#172a45]">
+            <Rocket className="h-7 w-7 text-white" strokeWidth={2.5} />
           </div>
           <h1 className="text-3xl font-bold tracking-tight text-black">
             Welcome back!
           </h1>
           <p className="mt-1 text-base font-medium text-gray-600">
-            Sign in to your cploy account
+            Sign in to your deployCode account
           </p>
         </div>
 
@@ -83,7 +83,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="btn-brutal w-full bg-lime-400 text-black hover:bg-lime-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn-brutal w-full bg-[#1d5fa7] text-white hover:bg-[#174f8c] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? (
                 <>

@@ -8,45 +8,47 @@
   }
 
   body {
-    font-family: "Space Grotesk", system-ui, sans-serif;
+    font-family: "Archivo", system-ui, sans-serif;
+    background-color: #f4f0e6;
+    background-image: linear-gradient(90deg, transparent 95%, rgba(20, 30, 48, 0.07) 95%), linear-gradient(transparent 95%, rgba(20, 30, 48, 0.07) 95%);
+    background-size: 32px 32px;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Custom scrollbar — neo-brutalism style */
   ::-webkit-scrollbar {
     width: 10px;
   }
 
   ::-webkit-scrollbar-track {
-    background: #f0f0f0;
-    border-left: 2px solid #000;
+    background: #f4f0e6;
+    border-left: 2px solid #172a45;
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #000;
-    border: 2px solid #000;
+    background: #172a45;
+    border: 2px solid #172a45;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: #333;
+    background: #e63946;
   }
 }
 
 @layer components {
   .btn-brutal {
-    @apply relative inline-flex items-center justify-center gap-2 rounded-xl border-2 border-black px-5 py-3 text-sm font-bold uppercase tracking-wide shadow-brutal transition-all duration-150 active:translate-x-[4px] active:translate-y-[4px] active:shadow-none;
+    @apply relative inline-flex items-center justify-center gap-2 border-2 border-[#172a45] px-5 py-3 text-sm font-bold uppercase tracking-[0.08em] shadow-[4px_4px_0_#172a45] transition-all duration-150 active:translate-x-[4px] active:translate-y-[4px] active:shadow-none;
   }
 
   .btn-brutal:hover {
-    @apply translate-x-[2px] translate-y-[2px] shadow-brutal-hover;
+    @apply translate-x-[2px] translate-y-[2px] shadow-[2px_2px_0_#172a45];
   }
 
   .card-brutal {
-    @apply rounded-2xl border-2 border-black bg-white shadow-brutal;
+    @apply border-2 border-[#172a45] bg-[#fffdf7] shadow-[6px_6px_0_#172a45];
   }
 
   .input-brutal {
-    @apply w-full rounded-xl border-2 border-black bg-white px-4 py-3 text-sm font-medium shadow-brutal-sm transition-all duration-150 placeholder:text-gray-400 focus:outline-none focus:shadow-brutal focus:translate-x-[-2px] focus:translate-y-[-2px];
+    @apply w-full border-2 border-[#172a45] bg-[#fffdf7] px-4 py-3 text-sm font-medium shadow-[2px_2px_0_#172a45] transition-all duration-150 placeholder:text-gray-400 focus:outline-none focus:shadow-[4px_4px_0_#e63946] focus:translate-x-[-2px] focus:translate-y-[-2px];
   }
 }

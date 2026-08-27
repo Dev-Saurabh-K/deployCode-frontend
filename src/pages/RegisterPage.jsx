@@ -42,20 +42,20 @@ export default function RegisterPage() {
         <div className="absolute -right-10 top-24 h-36 w-36 -rotate-12 rounded-2xl border-2 border-black bg-cyan-300 opacity-30" />
         <div className="absolute -left-5 top-48 h-24 w-24 rotate-6 rounded-full border-2 border-black bg-yellow-300 opacity-30" />
         <div className="absolute bottom-24 right-1/4 h-20 w-20 -rotate-45 rounded-xl border-2 border-black bg-pink-300 opacity-20" />
-        <div className="absolute bottom-40 left-1/3 h-14 w-14 rounded-full border-2 border-black bg-lime-400 opacity-25" />
+        <div className="absolute bottom-40 left-1/3 h-14 w-14 rounded-full border-2 border-black bg-yellow-300 opacity-25" />
       </div>
 
       <div className="relative w-full max-w-md">
         {/* Logo */}
         <div className="mb-8 text-center">
-          <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl border-2 border-black bg-pink-400 shadow-brutal">
-            <Rocket className="h-7 w-7 text-black" strokeWidth={2.5} />
+          <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-full border-2 border-[#172a45] bg-[#e63946] shadow-[4px_4px_0_#172a45]">
+            <Rocket className="h-7 w-7 text-white" strokeWidth={2.5} />
           </div>
           <h1 className="text-3xl font-bold tracking-tight text-black">
             Create your account
           </h1>
           <p className="mt-1 text-base font-medium text-gray-600">
-            Get started with cploy
+            Get started with deployCode
           </p>
         </div>
 
@@ -120,7 +120,7 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="btn-brutal w-full bg-pink-400 text-black hover:bg-pink-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn-brutal w-full bg-[#e63946] text-white hover:bg-[#c92f3b] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? (
                 <>

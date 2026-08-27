@@ -7,7 +7,7 @@ import DeployPage from "./pages/DeployPage";
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-[#f0f0f0]">
+    <div className="min-h-screen">
       <Navbar />
       <Routes>
         <Route path="/login" element={<LoginPage />} />

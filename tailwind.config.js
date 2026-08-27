@@ -24,7 +24,7 @@ export default {
         "brutal-emerald": "4px 4px 0px 0px #10b981",
       },
       fontFamily: {
-        display: ["'Space Grotesk'", "system-ui", "sans-serif"],
+        display: ["'Archivo'", "system-ui", "sans-serif"],
         mono: ["'Space Mono'", "monospace"],
       },
       animation: {

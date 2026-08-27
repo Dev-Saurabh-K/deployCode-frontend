@@ -1,4 +1,4 @@
-# cploy API Documentation
+# deployCode API Documentation
 
 > **Base URL**: `http://<server-ip>:8000`
 > **Interactive Docs**: `GET /docs` (Swagger UI) · `GET /redoc` (ReDoc)
@@ -31,7 +31,7 @@
 
 ## Overview
 
-cploy is a self-hosted deployment platform. The API lets you:
+deployCode is a self-hosted deployment platform. The API lets you:
 
 1. **Register** an account and **log in** to receive a JWT
 2. **Deploy** a Vite + React app from a GitHub repo (runs asynchronously in the background)
@@ -47,7 +47,7 @@ All deploy endpoints are **protected** — they require a valid JWT in the `Auth
 ```mermaid
 sequenceDiagram
     participant FE as Frontend
-    participant API as cploy API
+    participant API as deployCode API
     participant BG as Background Worker
 
     FE->>API: POST /auth/register
@@ -84,7 +84,7 @@ The API allows requests from these origins:
 | `http://localhost:5173` | Vite dev server |
 | `https://dev-saurabh-k.xyz` | Production domain |
 | `https://www.dev-saurabh-k.xyz` | www subdomain |
-| `https://cploy.dev-saurabh-k.xyz` | cploy subdomain |
+| `https://deploycode.dev-saurabh-k.xyz` | deployCode subdomain |
 
 All methods, headers, and credentials are allowed. Requests from other origins will be blocked by the browser.
 
