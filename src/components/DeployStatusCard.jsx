@@ -11,37 +11,45 @@ const STATUS_CONFIG = {
     icon: Clock,
     label: "Pending",
     description: "Waiting for the build to start...",
-    color: "text-yellow-400",
-    bg: "bg-yellow-400/10",
-    border: "border-yellow-400/20",
-    animate: "animate-pulse-slow",
+    color: "text-yellow-700",
+    bg: "bg-yellow-200",
+    border: "border-yellow-500",
+    shadowClass: "shadow-brutal-yellow",
+    animate: "animate-bounce-slow",
+    cardBg: "bg-yellow-100",
   },
   running: {
     icon: Loader2,
     label: "Deploying",
     description: "Building and deploying your app...",
-    color: "text-blue-400",
-    bg: "bg-blue-400/10",
-    border: "border-blue-400/20",
+    color: "text-blue-700",
+    bg: "bg-blue-200",
+    border: "border-blue-500",
+    shadowClass: "shadow-brutal-blue",
     animate: "animate-spin",
+    cardBg: "bg-blue-50",
   },
   success: {
     icon: CheckCircle2,
-    label: "Deployed",
+    label: "Deployed!",
     description: "Your app is live!",
-    color: "text-emerald-400",
-    bg: "bg-emerald-400/10",
-    border: "border-emerald-400/20",
+    color: "text-emerald-700",
+    bg: "bg-emerald-200",
+    border: "border-emerald-500",
+    shadowClass: "shadow-brutal-emerald",
     animate: "",
+    cardBg: "bg-emerald-50",
   },
   failed: {
     icon: XCircle,
     label: "Failed",
     description: "Something went wrong during deployment.",
-    color: "text-red-400",
-    bg: "bg-red-400/10",
-    border: "border-red-400/20",
+    color: "text-red-700",
+    bg: "bg-red-200",
+    border: "border-red-500",
+    shadowClass: "shadow-brutal-red",
     animate: "",
+    cardBg: "bg-red-50",
   },
 };
 
@@ -68,23 +76,28 @@ export default function DeployStatusCard({ deployment, onReset }) {
 
   return (
     <div
-      className={`rounded-2xl border ${config.border} ${config.bg} p-6 backdrop-blur-sm transition-all duration-500`}
+      className={`rounded-2xl border-2 border-black ${config.cardBg} ${config.shadowClass} p-6 transition-all duration-300`}
     >
       {/* Header */}
       <div className="mb-6 flex items-center gap-3">
-        <div className={`rounded-full ${config.bg} p-2`}>
-          <StatusIcon className={`h-5 w-5 ${config.color} ${config.animate}`} />
+        <div
+          className={`rounded-xl border-2 border-black ${config.bg} p-2.5`}
+        >
+          <StatusIcon
+            className={`h-5 w-5 ${config.color} ${config.animate}`}
+            strokeWidth={2.5}
+          />
         </div>
         <div>
-          <h3 className={`text-lg font-semibold ${config.color}`}>
-            {config.label}
-          </h3>
-          <p className="text-sm text-gray-400">{config.description}</p>
+          <h3 className="text-lg font-bold text-black">{config.label}</h3>
+          <p className="text-sm font-medium text-gray-600">
+            {config.description}
+          </p>
         </div>
       </div>
 
       {/* Deployment Info */}
-      <div className="mb-6 space-y-2 rounded-xl bg-black/30 p-4">
+      <div className="mb-6 space-y-2 rounded-xl border-2 border-black bg-white p-4 shadow-brutal-sm">
         <InfoRow label="Image" value={deployment.image_name} />
         <InfoRow label="Port" value={deployment.port} />
         <InfoRow label="Repo" value={deployment.repo_url} isUrl />
@@ -93,31 +106,34 @@ export default function DeployStatusCard({ deployment, onReset }) {
       {/* Pipeline Steps */}
       {(deployment.status === "pending" || deployment.status === "running") && (
         <div className="mb-6 space-y-3">
-          <p className="text-xs font-medium uppercase tracking-wider text-gray-500">
+          <p className="text-xs font-bold uppercase tracking-widest text-gray-500">
             Pipeline
           </p>
           {STEPS.map((step, i) => (
             <div key={step} className="flex items-center gap-3">
               <div
-                className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-medium transition-all ${
+                className={`flex h-7 w-7 items-center justify-center rounded-lg border-2 border-black text-xs font-bold transition-all ${
                   i < activeStep
-                    ? "bg-primary-500 text-white"
+                    ? "bg-lime-400 text-black"
                     : i === activeStep
-                    ? "bg-primary-500/20 text-primary-400 ring-2 ring-primary-500/30"
-                    : "bg-white/5 text-gray-600"
+                    ? "bg-yellow-300 text-black animate-wiggle"
+                    : "bg-gray-100 text-gray-400"
                 }`}
               >
                 {i < activeStep ? "✓" : i + 1}
               </div>
               <span
-                className={`text-sm ${
-                  i <= activeStep ? "text-gray-300" : "text-gray-600"
+                className={`text-sm font-medium ${
+                  i <= activeStep ? "text-black" : "text-gray-400"
                 }`}
               >
                 {step}
               </span>
               {i === activeStep && (
-                <Loader2 className="h-3 w-3 animate-spin text-primary-400" />
+                <Loader2
+                  className="h-3.5 w-3.5 animate-spin text-black"
+                  strokeWidth={2.5}
+                />
               )}
             </div>
           ))}
@@ -130,10 +146,10 @@ export default function DeployStatusCard({ deployment, onReset }) {
           href={`https://${deployment.domain}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="mb-4 flex items-center gap-2 rounded-xl bg-emerald-500/10 p-4 text-emerald-400 transition-colors hover:bg-emerald-500/20"
+          className="mb-4 flex items-center gap-2 rounded-xl border-2 border-black bg-lime-400 p-4 font-bold text-black shadow-brutal-sm transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
         >
-          <ExternalLink className="h-4 w-4" />
-          <span className="text-sm font-medium">
+          <ExternalLink className="h-4 w-4" strokeWidth={2.5} />
+          <span className="text-sm">
             https://{deployment.domain}
           </span>
         </a>
@@ -141,11 +157,11 @@ export default function DeployStatusCard({ deployment, onReset }) {
 
       {/* Failed: Error Message */}
       {deployment.status === "failed" && deployment.error_message && (
-        <div className="mb-4 rounded-xl bg-red-500/10 p-4">
-          <p className="text-xs font-medium uppercase tracking-wider text-red-400">
+        <div className="mb-4 rounded-xl border-2 border-red-500 bg-red-100 p-4">
+          <p className="text-xs font-bold uppercase tracking-widest text-red-600">
             Error Details
           </p>
-          <p className="mt-1 text-sm text-red-300">
+          <p className="mt-1 text-sm font-medium text-red-700">
             {deployment.error_message}
           </p>
         </div>
@@ -155,9 +171,9 @@ export default function DeployStatusCard({ deployment, onReset }) {
       {(deployment.status === "success" || deployment.status === "failed") && (
         <button
           onClick={onReset}
-          className="w-full rounded-xl border border-white/10 py-2.5 text-sm font-medium text-gray-300 transition-colors hover:border-white/20 hover:text-white"
+          className="btn-brutal w-full bg-white text-black hover:bg-gray-100 mt-2"
         >
-          Deploy Another
+          ↻ Deploy Another
         </button>
       )}
     </div>
@@ -167,18 +183,20 @@ export default function DeployStatusCard({ deployment, onReset }) {
 function InfoRow({ label, value, isUrl }) {
   return (
     <div className="flex items-center justify-between text-sm">
-      <span className="text-gray-500">{label}</span>
+      <span className="font-bold uppercase tracking-wide text-gray-500">
+        {label}
+      </span>
       {isUrl ? (
         <a
           href={value}
           target="_blank"
           rel="noopener noreferrer"
-          className="max-w-[240px] truncate text-primary-400 hover:underline"
+          className="max-w-[240px] truncate font-mono text-blue-600 underline decoration-2 underline-offset-2 hover:text-blue-800"
         >
           {value}
         </a>
       ) : (
-        <span className="text-gray-300">{value}</span>
+        <span className="font-mono font-bold text-black">{value}</span>
       )}
     </div>
   );

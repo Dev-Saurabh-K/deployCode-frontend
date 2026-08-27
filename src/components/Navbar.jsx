@@ -7,14 +7,14 @@ export default function Navbar() {
   const location = useLocation();
 
   return (
-    <nav className="fixed top-0 z-50 w-full border-b border-white/5 bg-[#0a0a0a]/80 backdrop-blur-xl">
+    <nav className="fixed top-0 z-50 w-full border-b-3 border-black bg-white">
       <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4 sm:px-6">
-        <Link to="/" className="flex items-center gap-2 group">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-500/10 transition-colors group-hover:bg-primary-500/20">
-            <Rocket className="h-4 w-4 text-primary-400" />
+        <Link to="/" className="flex items-center gap-2.5 group">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg border-2 border-black bg-lime-400 shadow-brutal-sm transition-all group-hover:translate-x-[2px] group-hover:translate-y-[2px] group-hover:shadow-none">
+            <Rocket className="h-4 w-4 text-black" strokeWidth={2.5} />
           </div>
-          <span className="text-lg font-bold tracking-tight text-white">
-            c<span className="text-primary-400">ploy</span>
+          <span className="text-xl font-bold tracking-tight text-black">
+            cploy
           </span>
         </Link>
 
@@ -22,26 +22,26 @@ export default function Navbar() {
           {isAuthenticated ? (
             <button
               onClick={logout}
-              className="flex items-center gap-2 rounded-lg border border-white/10 px-3 py-1.5 text-sm text-gray-400 transition-colors hover:border-white/20 hover:text-white"
+              className="btn-brutal border-red-500 bg-red-100 text-red-600 shadow-brutal-red hover:bg-red-200 py-2 px-4"
             >
-              <LogOut className="h-3.5 w-3.5" />
+              <LogOut className="h-3.5 w-3.5" strokeWidth={2.5} />
               Logout
             </button>
           ) : (
             <>
               <Link
                 to="/login"
-                className={`rounded-lg px-3 py-1.5 text-sm transition-colors ${
+                className={`rounded-xl border-2 border-black px-4 py-2 text-sm font-bold uppercase tracking-wide transition-all ${
                   location.pathname === "/login"
-                    ? "text-white"
-                    : "text-gray-400 hover:text-white"
+                    ? "bg-yellow-300 shadow-brutal-sm"
+                    : "bg-white hover:bg-gray-100"
                 }`}
               >
                 Login
               </Link>
               <Link
                 to="/register"
-                className="rounded-lg bg-primary-500 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-primary-600"
+                className="btn-brutal bg-lime-400 text-black hover:bg-lime-300 py-2 px-4"
               >
                 Register
               </Link>

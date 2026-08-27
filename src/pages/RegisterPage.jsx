@@ -37,34 +37,37 @@ export default function RegisterPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4">
-      {/* Background gradient */}
-      <div className="pointer-events-none fixed inset-0">
-        <div className="absolute left-1/2 top-0 h-[500px] w-[800px] -translate-x-1/2 rounded-full bg-primary-500/5 blur-3xl" />
+      {/* Decorative shapes */}
+      <div className="pointer-events-none fixed inset-0 overflow-hidden">
+        <div className="absolute -right-10 top-24 h-36 w-36 -rotate-12 rounded-2xl border-2 border-black bg-cyan-300 opacity-30" />
+        <div className="absolute -left-5 top-48 h-24 w-24 rotate-6 rounded-full border-2 border-black bg-yellow-300 opacity-30" />
+        <div className="absolute bottom-24 right-1/4 h-20 w-20 -rotate-45 rounded-xl border-2 border-black bg-pink-300 opacity-20" />
+        <div className="absolute bottom-40 left-1/3 h-14 w-14 rounded-full border-2 border-black bg-lime-400 opacity-25" />
       </div>
 
       <div className="relative w-full max-w-md">
         {/* Logo */}
         <div className="mb-8 text-center">
-          <div className="mb-3 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-500/10">
-            <Rocket className="h-6 w-6 text-primary-400" />
+          <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl border-2 border-black bg-pink-400 shadow-brutal">
+            <Rocket className="h-7 w-7 text-black" strokeWidth={2.5} />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-white">
+          <h1 className="text-3xl font-bold tracking-tight text-black">
             Create your account
           </h1>
-          <p className="mt-1 text-sm text-gray-400">
+          <p className="mt-1 text-base font-medium text-gray-600">
             Get started with cploy
           </p>
         </div>
 
         {/* Card */}
-        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur-xl sm:p-8">
+        <div className="card-brutal p-6 sm:p-8">
           {error && (
-            <div className="mb-4 rounded-lg bg-red-500/10 p-3 text-sm text-red-400">
-              {error}
+            <div className="mb-4 rounded-xl border-2 border-red-500 bg-red-100 p-3 text-sm font-bold text-red-600 shadow-brutal-red">
+              ⚠ {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <InputField
               label="Username"
               id="username"
@@ -117,28 +120,30 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary-500 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn-brutal w-full bg-pink-400 text-black hover:bg-pink-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? (
                 <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2.5} />
                   Creating account...
                 </>
               ) : (
-                "Create Account"
+                "→ Create Account"
               )}
             </button>
           </form>
 
-          <p className="mt-6 text-center text-sm text-gray-400">
-            Already have an account?{" "}
-            <Link
-              to="/login"
-              className="font-medium text-primary-400 hover:text-primary-300"
-            >
-              Sign in
-            </Link>
-          </p>
+          <div className="mt-6 rounded-xl border-2 border-dashed border-gray-300 p-3 text-center">
+            <p className="text-sm font-medium text-gray-600">
+              Already have an account?{" "}
+              <Link
+                to="/login"
+                className="font-bold text-black underline decoration-2 underline-offset-2 hover:decoration-pink-500"
+              >
+                Sign in →
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
     </div>

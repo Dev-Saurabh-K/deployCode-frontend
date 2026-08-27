@@ -8,27 +8,45 @@
   }
 
   body {
-    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-      Oxygen, Ubuntu, sans-serif;
+    font-family: "Space Grotesk", system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Custom scrollbar */
+  /* Custom scrollbar — neo-brutalism style */
   ::-webkit-scrollbar {
-    width: 6px;
+    width: 10px;
   }
 
   ::-webkit-scrollbar-track {
-    background: transparent;
+    background: #f0f0f0;
+    border-left: 2px solid #000;
   }
 
   ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 3px;
+    background: #000;
+    border: 2px solid #000;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: #333;
+  }
+}
+
+@layer components {
+  .btn-brutal {
+    @apply relative inline-flex items-center justify-center gap-2 rounded-xl border-2 border-black px-5 py-3 text-sm font-bold uppercase tracking-wide shadow-brutal transition-all duration-150 active:translate-x-[4px] active:translate-y-[4px] active:shadow-none;
+  }
+
+  .btn-brutal:hover {
+    @apply translate-x-[2px] translate-y-[2px] shadow-brutal-hover;
+  }
+
+  .card-brutal {
+    @apply rounded-2xl border-2 border-black bg-white shadow-brutal;
+  }
+
+  .input-brutal {
+    @apply w-full rounded-xl border-2 border-black bg-white px-4 py-3 text-sm font-medium shadow-brutal-sm transition-all duration-150 placeholder:text-gray-400 focus:outline-none focus:shadow-brutal focus:translate-x-[-2px] focus:translate-y-[-2px];
   }
 }
