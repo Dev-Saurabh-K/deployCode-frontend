@@ -4,6 +4,7 @@ import {
   CheckCircle2,
   XCircle,
   ExternalLink,
+  Trash2,
 } from "lucide-react";
 
 const STATUS_CONFIG = {
@@ -50,6 +51,28 @@ const STATUS_CONFIG = {
     shadowClass: "shadow-brutal-red",
     animate: "",
     cardBg: "bg-red-50",
+  },
+  deleting: {
+    icon: Loader2,
+    label: "Deleting...",
+    description: "Tearing down deployment and cleaning up resources...",
+    color: "text-purple-700",
+    bg: "bg-purple-200",
+    border: "border-purple-500",
+    shadowClass: "shadow-brutal-purple",
+    animate: "animate-spin",
+    cardBg: "bg-purple-50",
+  },
+  deleted: {
+    icon: Trash2,
+    label: "Deleted",
+    description: "Deployment has been completely removed.",
+    color: "text-gray-700",
+    bg: "bg-gray-200",
+    border: "border-gray-500",
+    shadowClass: "shadow-brutal-sm",
+    animate: "",
+    cardBg: "bg-gray-50",
   },
 };
 
@@ -99,7 +122,7 @@ export default function DeployStatusCard({ deployment, onReset }) {
       {/* Deployment Info */}
       <div className="mb-6 space-y-2 rounded-xl border-2 border-black bg-white p-4 shadow-brutal-sm">
         <InfoRow label="App Name" value={deployment.image_name} />
-        <InfoRow label="Port" value={deployment.port} />
+        <InfoRow label="Port" value={deployment.port || "Auto-assigned"} />
         <InfoRow label="Repo" value={deployment.repo_url} isUrl />
       </div>
 
@@ -168,7 +191,9 @@ export default function DeployStatusCard({ deployment, onReset }) {
       )}
 
       {/* Reset Button */}
-      {(deployment.status === "success" || deployment.status === "failed") && (
+      {(deployment.status === "success" ||
+        deployment.status === "failed" ||
+        deployment.status === "deleted") && (
         <button
           onClick={onReset}
           className="btn-brutal w-full bg-white text-black hover:bg-gray-100 mt-2"
