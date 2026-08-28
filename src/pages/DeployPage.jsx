@@ -27,6 +27,16 @@ const DEPLOYMENT_LIMIT = 2;
 const MAX_ENVIRONMENT_VARIABLES = 100;
 const INACTIVE_STATUSES = ["failed", "deleted"];
 const ENVIRONMENT_VARIABLE_NAME = /^[A-Za-z_][A-Za-z0-9_]*$/;
+const APP_NAME_PATTERN = /^(?=.{1,63}$)[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/;
+
+function getAppNameError(appName) {
+  if (!appName) return "Enter an app name.";
+  if (appName.length > 63) return "App names can be at most 63 characters.";
+  if (!APP_NAME_PATTERN.test(appName)) {
+    return "Use lowercase letters, numbers, and hyphens only. Start with a letter and do not end with a hyphen.";
+  }
+  return "";
+}
 const COMING_SOON_STACKS = [
   { name: "Next.js", type: "Frontend", icon: Code2, color: "bg-blue-200" },
   { name: "Vue.js", type: "Frontend", icon: Code2, color: "bg-emerald-200" },
@@ -38,6 +48,7 @@ const COMING_SOON_STACKS = [
 
 export default function DeployPage() {
   const [imageName, setImageName] = useState("");
+  const [appNameError, setAppNameError] = useState("");
   const [repoUrl, setRepoUrl] = useState("");
   const [environmentVariables, setEnvironmentVariables] = useState([]);
   const [isDeploying, setIsDeploying] = useState(false);
@@ -133,22 +144,33 @@ export default function DeployPage() {
         return;
       }
 
+      const appName = imageName.trim();
+      const validationError = getAppNameError(appName);
+      if (validationError) {
+        setAppNameError(validationError);
+        return;
+      }
+      if (activeProjects.some((project) => project.image_name === appName)) {
+        setAppNameError("You already have an active project using this app name.");
+        return;
+      }
+
       const result = await startDeploy(
-        imageName,
+        appName,
         repoUrl,
         getEnvironmentVariablesPayload()
       );
 
       setDeployment({
         deployment_id: result.deployment_id,
-        image_name: imageName,
+        image_name: appName,
         repo_url: repoUrl,
         status: "pending",
       });
       setProjects((currentProjects) => [
         {
           id: result.deployment_id,
-          image_name: imageName,
+          image_name: appName,
           repo_url: repoUrl,
           status: "pending",
         },
@@ -179,6 +201,7 @@ export default function DeployPage() {
     setDeployment(null);
     setDeployError(null);
     setImageName("");
+    setAppNameError("");
     setRepoUrl("");
     setEnvironmentVariables([]);
   };
@@ -272,9 +295,16 @@ export default function DeployPage() {
                 label="App Name"
                 id="imageName"
                 value={imageName}
-                onChange={(e) => setImageName(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setImageName(value);
+                  if (appNameError) setAppNameError(getAppNameError(value.trim()));
+                }}
+                onBlur={() => setAppNameError(getAppNameError(imageName.trim()))}
                 placeholder="my-react-app"
                 icon={Box}
+                error={appNameError}
+                helperText="Lowercase, 1–63 characters. Use letters, numbers, and internal hyphens (for example, my-app-2)."
                 required
               />
 
@@ -386,7 +416,7 @@ export default function DeployPage() {
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="mt-0.5 inline-block h-4 w-4 rounded border-2 border-black bg-lime-400 text-center text-[10px] font-bold leading-3">✓</span>
-                  App name must be unique across all deployments
+                  App name must be unique across all active deployments
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="mt-0.5 inline-block h-4 w-4 rounded border-2 border-black bg-lime-400 text-center text-[10px] font-bold leading-3">✓</span>

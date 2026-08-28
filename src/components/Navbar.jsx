@@ -4,7 +4,7 @@ import ThemeToggle from "./ThemeToggle";
 import { Rocket, LogOut } from "lucide-react";
 
 export default function Navbar() {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout, username } = useAuth();
   const location = useLocation();
 
   return (
@@ -20,7 +20,7 @@ export default function Navbar() {
           <div className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-[#172a45] bg-[#e63946] shadow-[2px_2px_0_#172a45] transition-all group-hover:translate-x-[2px] group-hover:translate-y-[2px] group-hover:shadow-none">
             <Rocket className="h-4 w-4 text-white" strokeWidth={2.5} />
           </div>
-          <span className="text-xl font-black tracking-tight text-[#172a45]">
+          <span className="brand-name text-xl font-black tracking-tight text-[#172a45]">
             deployCode
           </span>
         </Link>
@@ -28,13 +28,21 @@ export default function Navbar() {
         <div className="flex items-center gap-3">
           <ThemeToggle />
           {isAuthenticated ? (
-            <button
-              onClick={logout}
-              className="btn-brutal border-[#172a45] bg-[#e63946] py-2 px-4 text-white hover:bg-[#c92f3b]"
-            >
-              <LogOut className="h-3.5 w-3.5" strokeWidth={2.5} />
-              Logout
-            </button>
+            <>
+              <span
+                title={username || "Signed-in user"}
+                className="hidden max-w-32 truncate border-2 border-[#172a45] bg-[#f6c445] px-3 py-2 text-sm font-bold text-[#172a45] sm:inline"
+              >
+                {username || "Account"}
+              </span>
+              <button
+                onClick={logout}
+                className="btn-brutal border-[#172a45] bg-[#e63946] py-2 px-4 text-white hover:bg-[#c92f3b]"
+              >
+                <LogOut className="h-3.5 w-3.5" strokeWidth={2.5} />
+                Logout
+              </button>
+            </>
           ) : (
             <>
               <Link

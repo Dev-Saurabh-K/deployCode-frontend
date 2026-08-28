@@ -7,6 +7,8 @@ export default function InputField({
   placeholder,
   icon: Icon,
   error,
+  helperText,
+  onBlur,
   required = false,
 }) {
   return (
@@ -29,6 +31,7 @@ export default function InputField({
           type={type}
           value={value}
           onChange={onChange}
+          onBlur={onBlur}
           placeholder={placeholder}
           required={required}
           className={`input-brutal ${
@@ -42,6 +45,9 @@ export default function InputField({
       </div>
       {error && (
         <p className="text-xs font-bold uppercase text-red-500">⚠ {error}</p>
+      )}
+      {!error && helperText && (
+        <p className="text-xs font-medium text-gray-500">{helperText}</p>
       )}
     </div>
   );
