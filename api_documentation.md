@@ -1,4 +1,4 @@
-# deployCode API Documentation
+# cploy API Documentation
 
 > **Base URL**: `http://<server-ip>:8000`
 > **Interactive Docs**: `GET /docs` (Swagger UI) · `GET /redoc` (ReDoc)
@@ -31,7 +31,7 @@
 
 ## Overview
 
-deployCode is a self-hosted deployment platform. The API lets you:
+cploy is a self-hosted deployment platform. The API lets you:
 
 1. **Register** an account and **log in** to receive a JWT
 2. **Deploy** a Vite + React app from a GitHub repo (runs asynchronously in the background)
@@ -47,7 +47,7 @@ All deploy endpoints are **protected** — they require a valid JWT in the `Auth
 ```mermaid
 sequenceDiagram
     participant FE as Frontend
-    participant API as deployCode API
+    participant API as cploy API
     participant BG as Background Worker
 
     FE->>API: POST /auth/register
@@ -84,7 +84,7 @@ The API allows requests from these origins:
 | `http://localhost:5173` | Vite dev server |
 | `https://dev-saurabh-k.xyz` | Production domain |
 | `https://www.dev-saurabh-k.xyz` | www subdomain |
-| `https://deploycode.dev-saurabh-k.xyz` | deployCode subdomain |
+| `https://cploy.dev-saurabh-k.xyz` | cploy subdomain |
 
 All methods, headers, and credentials are allowed. Requests from other origins will be blocked by the browser.
 
@@ -258,9 +258,10 @@ Deployments are **asynchronous**. When you start a deploy:
 The deployment pipeline runs these steps sequentially:
 1. Create deployment directory on the server
 2. Generate `docker-compose.yml`
-3. Clone the GitHub repository
-4. Run `docker-compose up -d --build`
-5. Configure nginx reverse proxy
+3. Write supplied environment variables to the deployment's `.env` file
+4. Clone the GitHub repository
+5. Run `docker compose up -d --build` (which loads `.env`)
+6. Configure nginx reverse proxy
 
 If any step fails, the deployment is marked `failed` with the error details.
 
@@ -404,19 +405,29 @@ Start a new Vite + React deployment. The request returns immediately while the d
 |-------|------|----------|-------------|
 | `image_name` | `string` | ✅ | Name for the Docker image and container. Also becomes the subdomain: `<image_name>.dev-saurabh-k.xyz` |
 | `repo_url` | `string` | ✅ | GitHub repository URL to clone (e.g. `"https://github.com/user/repo.git"`) |
+| `environment_variables` | `object` | No | Environment variables to provide to the container. Keys must be valid shell-style variable names; values must be strings. Defaults to `{}`. |
 
 ```json
 {
   "image_name": "myapp",
-  "repo_url": "https://github.com/johndoe/my-react-app.git"
+  "repo_url": "https://github.com/johndoe/my-react-app.git",
+  "environment_variables": {
+    "API_URL": "https://api.example.com",
+    "FEATURE_FLAG": "enabled"
+  }
 }
 ```
+
+The variables are written to `/opt/deployCode/<image_name>/.env`. The generated
+Compose configuration uses that file as its `env_file`, so they are available to
+the running container. They are not returned by deployment status endpoints.
 
 > [!IMPORTANT]
 > - `image_name` must be **unique** across all deployments (it's used as the Docker container name and nginx subdomain)
 > - `repo_url` must contain a valid Vite + React project with a `package.json` at the root
 > - User must have **fewer than 2 active deployments** or the request will be rejected
 > - **Port is auto-assigned** from range 10000–40000 — do not send it in the request
+> - You may send up to **100** environment variables. Names must start with a letter or underscore and contain only letters, digits, and underscores. Values cannot contain line breaks.
 
 #### Success Response — `202 Accepted`
 
@@ -458,6 +469,10 @@ const response = await fetch("/deploy/vite/react", {
   body: JSON.stringify({
     image_name: "myapp",
     repo_url: "https://github.com/johndoe/my-react-app.git",
+    environment_variables: {
+      API_URL: "https://api.example.com",
+      FEATURE_FLAG: "enabled",
+    },
   }),
 });
 
@@ -644,7 +659,7 @@ The `delete_deployment.sh` script runs these cleanup steps:
 1. Remove nginx symlink from `sites-enabled`
 2. Remove nginx config from `sites-available`
 3. Test and reload nginx
-4. Run `docker-compose down --rmi all --remove-orphans` (stops containers, removes images)
+4. Run `docker compose down --rmi all --remove-orphans` (stops containers, removes images)
 5. Delete the entire deployment directory (`/opt/deployCode/<image_name>`)
 
 #### Success Response — `200 OK`
@@ -893,7 +908,7 @@ export async function getMyProjects() {
 }
 
 /** Start a new deployment (port is auto-assigned by the server) */
-export async function startDeploy(imageName, repoUrl) {
+export async function startDeploy(imageName, repoUrl, environmentVariables = {}) {
   const res = await fetch(`${API_BASE}/deploy/vite/react`, {
     method: "POST",
     headers: {
@@ -903,6 +918,7 @@ export async function startDeploy(imageName, repoUrl) {
     body: JSON.stringify({
       image_name: imageName,
       repo_url: repoUrl,
+      environment_variables: environmentVariables,
     }),
   });
   if (!res.ok) throw await res.json();
@@ -979,7 +995,8 @@ async function handleDeploy() {
   try {
     const { deployment_id } = await startDeploy(
       "my-portfolio",
-      "https://github.com/john/portfolio.git"
+      "https://github.com/john/portfolio.git",
+      { API_URL: "https://api.example.com" }
     );
 
     const result = await watchDeploy(deployment_id, (status) => {

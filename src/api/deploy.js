@@ -14,7 +14,7 @@ export async function getMyProjects() {
   return data;
 }
 
-export async function startDeploy(imageName, repoUrl) {
+export async function startDeploy(imageName, repoUrl, environmentVariables = {}) {
   const res = await fetch(`${API_BASE}/deploy/vite/react`, {
     method: "POST",
     headers: {
@@ -24,6 +24,7 @@ export async function startDeploy(imageName, repoUrl) {
     body: JSON.stringify({
       image_name: imageName,
       repo_url: repoUrl,
+      environment_variables: environmentVariables,
     }),
   });
 

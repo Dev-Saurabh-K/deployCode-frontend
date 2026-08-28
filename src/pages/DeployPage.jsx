@@ -15,6 +15,7 @@ import {
   ExternalLink,
   GitBranch,
   Loader2,
+  Plus,
   Rocket,
   Server,
   Sparkles,
@@ -23,7 +24,9 @@ import {
 } from "lucide-react";
 
 const DEPLOYMENT_LIMIT = 2;
+const MAX_ENVIRONMENT_VARIABLES = 100;
 const INACTIVE_STATUSES = ["failed", "deleted"];
+const ENVIRONMENT_VARIABLE_NAME = /^[A-Za-z_][A-Za-z0-9_]*$/;
 const COMING_SOON_STACKS = [
   { name: "Next.js", type: "Frontend", icon: Code2, color: "bg-blue-200" },
   { name: "Vue.js", type: "Frontend", icon: Code2, color: "bg-emerald-200" },
@@ -36,6 +39,7 @@ const COMING_SOON_STACKS = [
 export default function DeployPage() {
   const [imageName, setImageName] = useState("");
   const [repoUrl, setRepoUrl] = useState("");
+  const [environmentVariables, setEnvironmentVariables] = useState([]);
   const [isDeploying, setIsDeploying] = useState(false);
   const [deployment, setDeployment] = useState(null);
   const [deployError, setDeployError] = useState(null);
@@ -75,6 +79,49 @@ export default function DeployPage() {
   );
   const hasReachedLimit = activeProjects.length >= DEPLOYMENT_LIMIT;
 
+  const addEnvironmentVariable = () => {
+    if (environmentVariables.length < MAX_ENVIRONMENT_VARIABLES) {
+      setEnvironmentVariables((variables) => [...variables, { key: "", value: "" }]);
+    }
+  };
+
+  const updateEnvironmentVariable = (index, field, value) => {
+    setEnvironmentVariables((variables) =>
+      variables.map((variable, variableIndex) =>
+        variableIndex === index ? { ...variable, [field]: value } : variable
+      )
+    );
+  };
+
+  const removeEnvironmentVariable = (index) => {
+    setEnvironmentVariables((variables) =>
+      variables.filter((_, variableIndex) => variableIndex !== index)
+    );
+  };
+
+  const getEnvironmentVariablesPayload = () => {
+    const values = {};
+
+    for (const variable of environmentVariables) {
+      const name = variable.key.trim();
+      const value = variable.value;
+
+      if (!name && !value) continue;
+      if (!ENVIRONMENT_VARIABLE_NAME.test(name)) {
+        throw new Error("Variable names must start with a letter or underscore and only use letters, numbers, and underscores.");
+      }
+      if (Object.prototype.hasOwnProperty.call(values, name)) {
+        throw new Error(`The variable name ${name} is used more than once.`);
+      }
+      if (/\r|\n/.test(value)) {
+        throw new Error(`The value for ${name} cannot contain line breaks.`);
+      }
+      values[name] = value;
+    }
+
+    return values;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsDeploying(true);
@@ -86,7 +133,11 @@ export default function DeployPage() {
         return;
       }
 
-      const result = await startDeploy(imageName, repoUrl);
+      const result = await startDeploy(
+        imageName,
+        repoUrl,
+        getEnvironmentVariablesPayload()
+      );
 
       setDeployment({
         deployment_id: result.deployment_id,
@@ -118,7 +169,7 @@ export default function DeployPage() {
         handleAuthError();
         return;
       }
-      setDeployError(err.detail || "Failed to start deployment");
+      setDeployError(err.detail || err.message || "Failed to start deployment");
     } finally {
       setIsDeploying(false);
     }
@@ -129,6 +180,7 @@ export default function DeployPage() {
     setDeployError(null);
     setImageName("");
     setRepoUrl("");
+    setEnvironmentVariables([]);
   };
 
   const handleDelete = async (project) => {
@@ -236,6 +288,71 @@ export default function DeployPage() {
                 required
               />
 
+              <div className="border-2 border-dashed border-gray-400 bg-gray-50 p-4">
+                <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <h3 className="text-sm font-bold uppercase tracking-wide text-black">
+                      Environment variables
+                    </h3>
+                    <p className="mt-1 text-xs font-medium text-gray-600">
+                      Add app settings or secret keys. They are sent securely for this deployment and are not shown again.
+                    </p>
+                  </div>
+                  <span className="text-xs font-bold text-gray-500">
+                    {environmentVariables.length} / {MAX_ENVIRONMENT_VARIABLES}
+                  </span>
+                </div>
+
+                {environmentVariables.length > 0 && (
+                  <div className="space-y-3">
+                    {environmentVariables.map((variable, index) => (
+                      <div key={index} className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] sm:items-end">
+                        <label className="block text-xs font-bold uppercase tracking-wide text-gray-600">
+                          Name
+                          <input
+                            type="text"
+                            value={variable.key}
+                            onChange={(event) => updateEnvironmentVariable(index, "key", event.target.value)}
+                            placeholder="API_URL"
+                            autoComplete="off"
+                            className="input-brutal mt-1 py-2"
+                          />
+                        </label>
+                        <label className="block text-xs font-bold uppercase tracking-wide text-gray-600">
+                          Value
+                          <input
+                            type="text"
+                            value={variable.value}
+                            onChange={(event) => updateEnvironmentVariable(index, "value", event.target.value)}
+                            placeholder="https://api.example.com"
+                            autoComplete="off"
+                            className="input-brutal mt-1 py-2"
+                          />
+                        </label>
+                        <button
+                          type="button"
+                          onClick={() => removeEnvironmentVariable(index)}
+                          aria-label={`Remove environment variable ${index + 1}`}
+                          className="btn-brutal h-10 border-red-500 bg-red-100 px-3 py-2 text-red-700 hover:bg-red-200"
+                        >
+                          <Trash2 className="h-4 w-4" strokeWidth={2.5} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <button
+                  type="button"
+                  onClick={addEnvironmentVariable}
+                  disabled={environmentVariables.length >= MAX_ENVIRONMENT_VARIABLES}
+                  className="btn-brutal mt-4 border-[#172a45] bg-[#f6c445] px-3 py-2 text-xs text-[#172a45] hover:bg-yellow-300 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <Plus className="h-4 w-4" strokeWidth={2.5} />
+                  Add variable
+                </button>
+              </div>
+
               <div className="pt-2">
                 <button
                   type="submit"
@@ -274,6 +391,10 @@ export default function DeployPage() {
                 <li className="flex items-start gap-2">
                   <span className="mt-0.5 inline-block h-4 w-4 rounded border-2 border-black bg-lime-400 text-center text-[10px] font-bold leading-3">✓</span>
                   Your port is assigned automatically when deployment starts
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="mt-0.5 inline-block h-4 w-4 rounded border-2 border-black bg-lime-400 text-center text-[10px] font-bold leading-3">✓</span>
+                  Add up to 100 environment variables when your app needs them
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="mt-0.5 inline-block h-4 w-4 rounded border-2 border-black bg-yellow-300 text-center text-[10px] font-bold leading-3">★</span>
