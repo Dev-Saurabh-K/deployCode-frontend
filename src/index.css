@@ -106,6 +106,18 @@ html.dark .bg-emerald-200 {
   background-color: #38b98b !important;
 }
 
+html.dark .bg-yellow-100 {
+  background-color: #4a390b !important;
+}
+
+html.dark .bg-blue-50 {
+  background-color: #102f50 !important;
+}
+
+html.dark .bg-red-50 {
+  background-color: #4a1820 !important;
+}
+
 html.dark .bg-yellow-300,
 html.dark .bg-yellow-200,
 html.dark .bg-lime-300,
