@@ -25,14 +25,13 @@ import {
   CheckCircle2,
   X,
   Server,
-  Key,
   Globe,
   Clock,
-  ChevronRight,
   UserCheck,
   UserX,
   AlertCircle,
   Hash,
+  Terminal,
 } from "lucide-react";
 
 const STATUS_CONFIG = {
@@ -102,8 +101,8 @@ export default function AdminDashboardPage() {
         getAdminDeployments(),
         getAdminUsers(),
       ]);
-      setDeployments(deploymentsData);
-      setUsers(usersData);
+      setDeployments(deploymentsData || []);
+      setUsers(usersData || []);
     } catch (err) {
       if (err.status === 401 || err.status === 403) {
         handleAuthError();
@@ -125,7 +124,7 @@ export default function AdminDashboardPage() {
     if (!deleteDeployModal) return;
     setIsDeletingDeploy(true);
     try {
-      const result = await deleteAdminDeployment(deleteDeployModal.id);
+      await deleteAdminDeployment(deleteDeployModal.id);
       showNotification(
         "success",
         `Deployment #${deleteDeployModal.id} (${deleteDeployModal.image_name}) deletion initiated.`
@@ -191,7 +190,7 @@ export default function AdminDashboardPage() {
       setEditUserModal(null);
       await loadData(true);
     } catch (err) {
-      if (err.status === 401 || err.status === 403 && err.detail?.includes("session")) {
+      if (err.status === 401 || (err.status === 403 && err.detail?.includes("session"))) {
         handleAuthError();
         return;
       }
@@ -266,7 +265,7 @@ export default function AdminDashboardPage() {
   const totalAdminsCount = users.filter((u) => u.is_admin).length;
 
   return (
-    <div className="min-h-screen pt-24 pb-16 px-4 sm:px-6">
+    <div className="min-h-screen pt-20 sm:pt-24 pb-16 px-3 sm:px-6">
       {/* Decorative background accents */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <div className="absolute -right-16 top-28 h-44 w-44 rotate-12 rounded-3xl border-2 border-[#172a45] bg-[#e63946] opacity-10" />
@@ -277,13 +276,13 @@ export default function AdminDashboardPage() {
         {/* Top Notification Toast */}
         {notification && (
           <div
-            className={`mb-6 flex items-center justify-between gap-3 rounded-xl border-2 border-[#172a45] p-4 font-bold shadow-[4px_4px_0_#172a45] ${
+            className={`mb-6 flex items-center justify-between gap-3 rounded-xl border-2 border-[#172a45] p-3 sm:p-4 font-bold shadow-[4px_4px_0_#172a45] ${
               notification.type === "success"
                 ? "bg-lime-300 text-black"
                 : "bg-red-200 text-red-900"
             }`}
           >
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 text-xs sm:text-sm">
               {notification.type === "success" ? (
                 <CheckCircle2 className="h-5 w-5 shrink-0" strokeWidth={2.5} />
               ) : (
@@ -293,7 +292,8 @@ export default function AdminDashboardPage() {
             </div>
             <button
               onClick={() => setNotification(null)}
-              className="rounded p-1 hover:bg-black/10"
+              className="rounded p-1 hover:bg-black/10 shrink-0"
+              aria-label="Dismiss notification"
             >
               <X className="h-4 w-4" />
             </button>
@@ -301,29 +301,29 @@ export default function AdminDashboardPage() {
         )}
 
         {/* Header section */}
-        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mb-6 sm:mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-xl border-2 border-[#172a45] bg-[#e63946] px-4 py-1.5 text-xs font-black uppercase tracking-widest text-white shadow-[2px_2px_0_#172a45] mb-3">
-              <Shield className="h-4 w-4" strokeWidth={2.5} />
+            <div className="inline-flex items-center gap-1.5 sm:gap-2 rounded-xl border-2 border-[#172a45] bg-[#e63946] px-3 sm:px-4 py-1 text-[11px] sm:text-xs font-black uppercase tracking-widest text-white shadow-[2px_2px_0_#172a45] mb-2 sm:mb-3">
+              <Shield className="h-3.5 w-3.5 sm:h-4 sm:w-4" strokeWidth={2.5} />
               System Administration
             </div>
-            <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-[#172a45]">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-[#172a45]">
               Administrator Console
             </h1>
-            <p className="mt-1 text-sm font-bold text-gray-600">
+            <p className="mt-1 text-xs sm:text-sm font-bold text-gray-600">
               Manage platform deployments, users, and credentials across all projects
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <button
               onClick={() => loadData(true)}
               disabled={isRefreshing || isLoading}
-              className="btn-brutal bg-[#f6c445] text-[#172a45] hover:bg-yellow-300 py-2.5 px-4"
+              className="btn-brutal bg-[#f6c445] text-[#172a45] hover:bg-yellow-300 py-2 sm:py-2.5 px-3 sm:px-4 text-xs sm:text-sm"
               title="Refresh administrative data"
             >
               <RefreshCw
-                className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`}
+                className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${isRefreshing ? "animate-spin" : ""}`}
                 strokeWidth={2.5}
               />
               Sync Data
@@ -334,121 +334,121 @@ export default function AdminDashboardPage() {
                 adminLogout();
                 navigate("/admin/login");
               }}
-              className="btn-brutal bg-[#e63946] text-white hover:bg-[#c92f3b] py-2.5 px-4"
+              className="btn-brutal bg-[#e63946] text-white hover:bg-[#c92f3b] py-2 sm:py-2.5 px-3 sm:px-4 text-xs sm:text-sm"
               title="Logout from Admin Portal"
             >
-              <LogOut className="h-4 w-4" strokeWidth={2.5} />
+              <LogOut className="h-3.5 w-3.5 sm:h-4 sm:w-4" strokeWidth={2.5} />
               Admin Exit
             </button>
           </div>
         </div>
 
         {/* System Metric Cards */}
-        <div className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
-          <div className="card-brutal p-4">
+        <div className="mb-6 sm:mb-8 grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-4">
+          <div className="card-brutal p-3 sm:p-4">
             <div className="flex items-center justify-between text-gray-500">
-              <span className="text-xs font-black uppercase tracking-wider">Total Deploys</span>
-              <Layers className="h-4 w-4 text-[#1d5fa7]" strokeWidth={2.5} />
+              <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider">Total Deploys</span>
+              <Layers className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-[#1d5fa7]" strokeWidth={2.5} />
             </div>
-            <div className="mt-2 text-2xl sm:text-3xl font-black text-[#172a45]">
+            <div className="mt-1.5 sm:mt-2 text-xl sm:text-2xl md:text-3xl font-black text-[#172a45]">
               {deployments.length}
             </div>
-            <div className="mt-1 text-[11px] font-bold text-gray-500">
+            <div className="mt-0.5 sm:mt-1 text-[10px] sm:text-[11px] font-bold text-gray-500">
               {activeDeploymentsCount} active on host
             </div>
           </div>
 
-          <div className="card-brutal p-4">
+          <div className="card-brutal p-3 sm:p-4">
             <div className="flex items-center justify-between text-gray-500">
-              <span className="text-xs font-black uppercase tracking-wider">Failed</span>
-              <AlertCircle className="h-4 w-4 text-[#e63946]" strokeWidth={2.5} />
+              <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider">Failed</span>
+              <AlertCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-[#e63946]" strokeWidth={2.5} />
             </div>
-            <div className="mt-2 text-2xl sm:text-3xl font-black text-[#e63946]">
+            <div className="mt-1.5 sm:mt-2 text-xl sm:text-2xl md:text-3xl font-black text-[#e63946]">
               {failedDeploymentsCount}
             </div>
-            <div className="mt-1 text-[11px] font-bold text-gray-500">
+            <div className="mt-0.5 sm:mt-1 text-[10px] sm:text-[11px] font-bold text-gray-500">
               Errored build tasks
             </div>
           </div>
 
-          <div className="card-brutal p-4">
+          <div className="card-brutal p-3 sm:p-4">
             <div className="flex items-center justify-between text-gray-500">
-              <span className="text-xs font-black uppercase tracking-wider">Total Users</span>
-              <Users className="h-4 w-4 text-emerald-600" strokeWidth={2.5} />
+              <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider">Total Users</span>
+              <Users className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-emerald-600" strokeWidth={2.5} />
             </div>
-            <div className="mt-2 text-2xl sm:text-3xl font-black text-[#172a45]">
+            <div className="mt-1.5 sm:mt-2 text-xl sm:text-2xl md:text-3xl font-black text-[#172a45]">
               {users.length}
             </div>
-            <div className="mt-1 text-[11px] font-bold text-gray-500">
+            <div className="mt-0.5 sm:mt-1 text-[10px] sm:text-[11px] font-bold text-gray-500">
               Registered accounts
             </div>
           </div>
 
-          <div className="card-brutal p-4">
+          <div className="card-brutal p-3 sm:p-4">
             <div className="flex items-center justify-between text-gray-500">
-              <span className="text-xs font-black uppercase tracking-wider">Administrators</span>
-              <Shield className="h-4 w-4 text-[#f6c445]" strokeWidth={2.5} />
+              <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider">Admins</span>
+              <Shield className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-[#f6c445]" strokeWidth={2.5} />
             </div>
-            <div className="mt-2 text-2xl sm:text-3xl font-black text-[#172a45]">
+            <div className="mt-1.5 sm:mt-2 text-xl sm:text-2xl md:text-3xl font-black text-[#172a45]">
               {totalAdminsCount}
             </div>
-            <div className="mt-1 text-[11px] font-bold text-gray-500">
+            <div className="mt-0.5 sm:mt-1 text-[10px] sm:text-[11px] font-bold text-gray-500">
               Full admin privileges
             </div>
           </div>
         </div>
 
         {/* Tab Navigation */}
-        <div className="mb-6 flex gap-3 border-b-2 border-[#172a45] pb-4">
+        <div className="mb-6 flex gap-2 sm:gap-3 border-b-2 border-[#172a45] pb-3 sm:pb-4">
           <button
             onClick={() => setActiveTab("deployments")}
-            className={`btn-brutal py-2.5 px-5 text-sm ${
+            className={`btn-brutal flex-1 sm:flex-initial py-2 sm:py-2.5 px-3 sm:px-5 text-xs sm:text-sm ${
               activeTab === "deployments"
                 ? "bg-[#1d5fa7] text-white shadow-[2px_2px_0_#172a45]"
                 : "bg-white text-[#172a45] hover:bg-gray-100"
             }`}
           >
-            <Layers className="h-4 w-4" strokeWidth={2.5} />
-            All Deployments ({deployments.length})
+            <Layers className="h-3.5 w-3.5 sm:h-4 sm:w-4" strokeWidth={2.5} />
+            Deployments ({deployments.length})
           </button>
 
           <button
             onClick={() => setActiveTab("users")}
-            className={`btn-brutal py-2.5 px-5 text-sm ${
+            className={`btn-brutal flex-1 sm:flex-initial py-2 sm:py-2.5 px-3 sm:px-5 text-xs sm:text-sm ${
               activeTab === "users"
                 ? "bg-[#e63946] text-white shadow-[2px_2px_0_#172a45]"
                 : "bg-white text-[#172a45] hover:bg-gray-100"
             }`}
           >
-            <Users className="h-4 w-4" strokeWidth={2.5} />
-            User Accounts ({users.length})
+            <Users className="h-3.5 w-3.5 sm:h-4 sm:w-4" strokeWidth={2.5} />
+            Users ({users.length})
           </button>
         </div>
 
         {/* Tab 1: Deployments Management */}
         {activeTab === "deployments" && (
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             {/* Search and Filters */}
-            <div className="card-brutal p-4">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div className="relative flex-1">
+            <div className="card-brutal p-3 sm:p-4">
+              <div className="flex flex-col gap-3">
+                <div className="relative w-full">
                   <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
                   <input
                     type="text"
                     value={deploySearch}
                     onChange={(e) => setDeploySearch(e.target.value)}
-                    placeholder="Search by app name, owner, port, repo, or domain..."
-                    className="input-brutal pl-10 py-2.5 text-sm"
+                    placeholder="Search by app name, owner, port, repo, domain..."
+                    className="input-brutal pl-10 py-2 sm:py-2.5 text-xs sm:text-sm"
                   />
                 </div>
 
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-xs font-bold uppercase text-gray-500">Status:</span>
+                <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 pt-0.5 no-scrollbar">
+                  <span className="text-[11px] font-bold uppercase text-gray-500 shrink-0 mr-1">Status:</span>
                   {["all", "success", "running", "pending", "failed", "deleting"].map((status) => (
                     <button
                       key={status}
                       onClick={() => setDeployStatusFilter(status)}
-                      className={`rounded-lg border-2 border-[#172a45] px-3 py-1 text-xs font-black uppercase tracking-wider transition-all ${
+                      className={`shrink-0 rounded-lg border-2 border-[#172a45] px-2.5 sm:px-3 py-1 text-[10px] sm:text-xs font-black uppercase tracking-wider transition-all ${
                         deployStatusFilter === status
                           ? "bg-[#172a45] text-white shadow-[2px_2px_0_#e63946]"
                           : "bg-white text-gray-700 hover:bg-gray-100"
@@ -461,307 +461,478 @@ export default function AdminDashboardPage() {
               </div>
             </div>
 
-            {/* Deployments Table / Cards */}
+            {/* Deployments Content */}
             {isLoading ? (
-              <div className="card-brutal flex min-h-[300px] items-center justify-center p-12">
+              <div className="card-brutal flex min-h-[250px] items-center justify-center p-8 sm:p-12">
                 <div className="text-center">
-                  <Loader2 className="mx-auto h-8 w-8 animate-spin text-[#172a45]" strokeWidth={2.5} />
-                  <p className="mt-3 text-sm font-bold uppercase tracking-wider text-gray-600">
+                  <Loader2 className="mx-auto h-7 w-7 sm:h-8 sm:w-8 animate-spin text-[#172a45]" strokeWidth={2.5} />
+                  <p className="mt-3 text-xs sm:text-sm font-bold uppercase tracking-wider text-gray-600">
                     Loading deployment records...
                   </p>
                 </div>
               </div>
             ) : filteredDeployments.length === 0 ? (
-              <div className="card-brutal p-12 text-center">
-                <Layers className="mx-auto h-12 w-12 text-gray-400" strokeWidth={1.5} />
-                <h3 className="mt-3 text-lg font-bold text-[#172a45]">No deployments found</h3>
-                <p className="mt-1 text-sm font-medium text-gray-500">
+              <div className="card-brutal p-8 sm:p-12 text-center">
+                <Layers className="mx-auto h-10 w-10 sm:h-12 sm:w-12 text-gray-400" strokeWidth={1.5} />
+                <h3 className="mt-3 text-base sm:text-lg font-bold text-[#172a45]">No deployments found</h3>
+                <p className="mt-1 text-xs sm:text-sm font-medium text-gray-500">
                   {deploySearch || deployStatusFilter !== "all"
                     ? "Try adjusting your search terms or status filter."
                     : "No deployments have been recorded on this server yet."}
                 </p>
               </div>
             ) : (
-              <div className="card-brutal overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-sm">
-                    <thead className="border-b-2 border-[#172a45] bg-[#172a45] text-xs font-black uppercase tracking-wider text-white">
-                      <tr>
-                        <th className="px-4 py-3.5">ID / App Name</th>
-                        <th className="px-4 py-3.5">Owner</th>
-                        <th className="px-4 py-3.5">Port & Domain</th>
-                        <th className="px-4 py-3.5">Repository</th>
-                        <th className="px-4 py-3.5">Status</th>
-                        <th className="px-4 py-3.5">Created</th>
-                        <th className="px-4 py-3.5 text-right">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y-2 divide-[#172a45]/10">
-                      {filteredDeployments.map((d) => {
-                        const statusConfig = STATUS_CONFIG[d.status] || STATUS_CONFIG.pending;
-                        return (
-                          <tr key={d.id} className="hover:bg-gray-50/80 transition-colors">
-                            {/* App & ID */}
-                            <td className="px-4 py-4">
-                              <div className="flex items-center gap-2">
-                                <span className="rounded border border-[#172a45] bg-gray-100 px-1.5 py-0.5 font-mono text-xs font-bold text-[#172a45]">
-                                  #{d.id}
-                                </span>
-                                <span className="font-bold text-black text-base">{d.image_name}</span>
-                              </div>
-                            </td>
-
-                            {/* Owner */}
-                            <td className="px-4 py-4">
-                              <div className="font-bold text-[#172a45]">
-                                {d.username || `User #${d.user_id}`}
-                              </div>
-                              <div className="text-xs font-medium text-gray-500">
-                                UID: {d.user_id}
-                              </div>
-                            </td>
-
-                            {/* Port & Domain */}
-                            <td className="px-4 py-4">
-                              <div className="font-mono text-xs font-bold text-gray-700">
-                                Port: {d.port || "N/A"}
-                              </div>
-                              {d.domain ? (
-                                <a
-                                  href={`https://${d.domain}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="inline-flex items-center gap-1 font-mono text-xs font-bold text-[#1d5fa7] underline decoration-2 underline-offset-2 hover:text-blue-800"
-                                >
-                                  {d.domain}
-                                  <ExternalLink className="h-3 w-3 shrink-0" />
-                                </a>
-                              ) : (
-                                <span className="text-xs font-medium text-gray-400">No domain active</span>
-                              )}
-                            </td>
-
-                            {/* Repository */}
-                            <td className="px-4 py-4">
-                              {d.repo_url ? (
-                                <a
-                                  href={d.repo_url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="inline-flex max-w-[160px] truncate items-center gap-1 font-mono text-xs text-gray-700 hover:text-black hover:underline"
-                                  title={d.repo_url}
-                                >
-                                  <GitBranch className="h-3.5 w-3.5 shrink-0" />
-                                  <span className="truncate">{d.repo_url.replace("https://github.com/", "")}</span>
-                                </a>
-                              ) : (
-                                <span className="text-xs text-gray-400">—</span>
-                              )}
-                            </td>
-
-                            {/* Status */}
-                            <td className="px-4 py-4">
-                              <span
-                                className={`inline-flex items-center gap-1.5 rounded-lg border-2 border-[#172a45] px-2.5 py-1 text-xs font-black uppercase tracking-wider ${statusConfig.bg} ${statusConfig.text}`}
-                              >
-                                {d.status === "running" && <Loader2 className="h-3 w-3 animate-spin" />}
-                                {statusConfig.label}
+              <>
+                {/* Mobile Card List View (visible on < md screens) */}
+                <div className="space-y-3 md:hidden">
+                  {filteredDeployments.map((d) => {
+                    const statusConfig = STATUS_CONFIG[d.status] || STATUS_CONFIG.pending;
+                    return (
+                      <div key={d.id} className="card-brutal p-4 space-y-3">
+                        {/* Top: ID, Image Name, Status */}
+                        <div className="flex items-start justify-between gap-2">
+                          <div>
+                            <div className="flex items-center gap-1.5">
+                              <span className="rounded border border-[#172a45] bg-gray-100 px-1.5 py-0.5 font-mono text-[10px] font-bold text-[#172a45]">
+                                #{d.id}
                               </span>
-                              {d.error_message && (
-                                <div
-                                  className="mt-1 max-w-[180px] truncate text-[11px] font-medium text-red-600"
-                                  title={d.error_message}
-                                >
-                                  ⚠ {d.error_message}
-                                </div>
-                              )}
-                            </td>
+                              <h3 className="font-bold text-black text-base">{d.image_name}</h3>
+                            </div>
+                            <p className="text-xs text-gray-600 mt-0.5">
+                              Owner: <span className="font-bold text-[#172a45]">{d.username || `UID ${d.user_id}`}</span> (UID #{d.user_id})
+                            </p>
+                          </div>
+                          <span
+                            className={`shrink-0 inline-flex items-center gap-1 rounded-lg border-2 border-[#172a45] px-2 py-0.5 text-[10px] font-black uppercase tracking-wider ${statusConfig.bg} ${statusConfig.text}`}
+                          >
+                            {d.status === "running" && <Loader2 className="h-2.5 w-2.5 animate-spin" />}
+                            {statusConfig.label}
+                          </span>
+                        </div>
 
-                            {/* Created */}
-                            <td className="px-4 py-4 font-mono text-xs text-gray-600">
+                        {/* Middle: Details grid */}
+                        <div className="grid grid-cols-2 gap-2 text-xs border-y-2 border-[#172a45]/10 py-2.5">
+                          <div>
+                            <span className="text-[10px] font-bold uppercase text-gray-400 block">Host Port</span>
+                            <span className="font-mono font-bold text-gray-700">{d.port || "Auto"}</span>
+                          </div>
+                          <div>
+                            <span className="text-[10px] font-bold uppercase text-gray-400 block">Created</span>
+                            <span className="font-mono text-gray-600">
                               {d.created_at ? new Date(d.created_at).toLocaleDateString() : "—"}
-                              <div className="text-[10px] text-gray-400">
-                                {d.created_at ? new Date(d.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : ""}
-                              </div>
-                            </td>
+                            </span>
+                          </div>
+                        </div>
 
-                            {/* Actions */}
-                            <td className="px-4 py-4 text-right">
-                              <button
-                                onClick={() => setDeleteDeployModal(d)}
-                                disabled={d.status === "deleting"}
-                                className="btn-brutal bg-red-100 text-[#e63946] border-[#e63946] hover:bg-red-200 py-1.5 px-3 text-xs disabled:opacity-40 disabled:cursor-not-allowed"
-                                title="Delete this deployment and remove server resources"
-                              >
-                                <Trash2 className="h-3.5 w-3.5" strokeWidth={2.5} />
-                                Delete
-                              </button>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+                        {/* Live Domain link if present */}
+                        {d.domain && (
+                          <a
+                            href={`https://${d.domain}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center justify-between rounded-lg border border-[#172a45] bg-lime-100 p-2 text-xs font-bold text-[#172a45] hover:bg-lime-200 transition-colors"
+                          >
+                            <span className="truncate font-mono">https://{d.domain}</span>
+                            <ExternalLink className="h-3.5 w-3.5 shrink-0 ml-1" />
+                          </a>
+                        )}
+
+                        {/* Repository link */}
+                        {d.repo_url && (
+                          <a
+                            href={d.repo_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1.5 text-xs font-mono text-gray-700 hover:text-black truncate"
+                            title={d.repo_url}
+                          >
+                            <GitBranch className="h-3.5 w-3.5 shrink-0 text-gray-500" />
+                            <span className="truncate">{d.repo_url.replace("https://github.com/", "")}</span>
+                          </a>
+                        )}
+
+                        {/* Error box if failed */}
+                        {d.error_message && (
+                          <div className="rounded-lg border border-red-400 bg-red-50 p-2 text-[11px] font-medium text-red-700">
+                            <span className="font-bold block">Error details:</span>
+                            <p className="line-clamp-2">{d.error_message}</p>
+                          </div>
+                        )}
+
+                        {/* Delete action */}
+                        <div className="pt-1">
+                          <button
+                            onClick={() => setDeleteDeployModal(d)}
+                            disabled={d.status === "deleting"}
+                            className="btn-brutal w-full bg-red-100 text-[#e63946] border-[#e63946] hover:bg-red-200 py-2 text-xs disabled:opacity-40"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" strokeWidth={2.5} />
+                            Delete Deployment
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-              </div>
+
+                {/* Desktop Table View (visible on md+ screens) */}
+                <div className="hidden md:block card-brutal overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-sm">
+                      <thead className="border-b-2 border-[#172a45] bg-[#172a45] text-xs font-black uppercase tracking-wider text-white">
+                        <tr>
+                          <th className="px-4 py-3.5">ID / App Name</th>
+                          <th className="px-4 py-3.5">Owner</th>
+                          <th className="px-4 py-3.5">Port & Domain</th>
+                          <th className="px-4 py-3.5">Repository</th>
+                          <th className="px-4 py-3.5">Status</th>
+                          <th className="px-4 py-3.5">Created</th>
+                          <th className="px-4 py-3.5 text-right">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y-2 divide-[#172a45]/10">
+                        {filteredDeployments.map((d) => {
+                          const statusConfig = STATUS_CONFIG[d.status] || STATUS_CONFIG.pending;
+                          return (
+                            <tr key={d.id} className="hover:bg-gray-50/80 transition-colors">
+                              {/* App & ID */}
+                              <td className="px-4 py-4">
+                                <div className="flex items-center gap-2">
+                                  <span className="rounded border border-[#172a45] bg-gray-100 px-1.5 py-0.5 font-mono text-xs font-bold text-[#172a45]">
+                                    #{d.id}
+                                  </span>
+                                  <span className="font-bold text-black text-base">{d.image_name}</span>
+                                </div>
+                              </td>
+
+                              {/* Owner */}
+                              <td className="px-4 py-4">
+                                <div className="font-bold text-[#172a45]">
+                                  {d.username || `User #${d.user_id}`}
+                                </div>
+                                <div className="text-xs font-medium text-gray-500">
+                                  UID: {d.user_id}
+                                </div>
+                              </td>
+
+                              {/* Port & Domain */}
+                              <td className="px-4 py-4">
+                                <div className="font-mono text-xs font-bold text-gray-700">
+                                  Port: {d.port || "N/A"}
+                                </div>
+                                {d.domain ? (
+                                  <a
+                                    href={`https://${d.domain}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-1 font-mono text-xs font-bold text-[#1d5fa7] underline decoration-2 underline-offset-2 hover:text-blue-800"
+                                  >
+                                    {d.domain}
+                                    <ExternalLink className="h-3 w-3 shrink-0" />
+                                  </a>
+                                ) : (
+                                  <span className="text-xs font-medium text-gray-400">No domain active</span>
+                                )}
+                              </td>
+
+                              {/* Repository */}
+                              <td className="px-4 py-4">
+                                {d.repo_url ? (
+                                  <a
+                                    href={d.repo_url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex max-w-[160px] truncate items-center gap-1 font-mono text-xs text-gray-700 hover:text-black hover:underline"
+                                    title={d.repo_url}
+                                  >
+                                    <GitBranch className="h-3.5 w-3.5 shrink-0" />
+                                    <span className="truncate">{d.repo_url.replace("https://github.com/", "")}</span>
+                                  </a>
+                                ) : (
+                                  <span className="text-xs text-gray-400">—</span>
+                                )}
+                              </td>
+
+                              {/* Status */}
+                              <td className="px-4 py-4">
+                                <span
+                                  className={`inline-flex items-center gap-1.5 rounded-lg border-2 border-[#172a45] px-2.5 py-1 text-xs font-black uppercase tracking-wider ${statusConfig.bg} ${statusConfig.text}`}
+                                >
+                                  {d.status === "running" && <Loader2 className="h-3 w-3 animate-spin" />}
+                                  {statusConfig.label}
+                                </span>
+                                {d.error_message && (
+                                  <div
+                                    className="mt-1 max-w-[180px] truncate text-[11px] font-medium text-red-600"
+                                    title={d.error_message}
+                                  >
+                                    ⚠ {d.error_message}
+                                  </div>
+                                )}
+                              </td>
+
+                              {/* Created */}
+                              <td className="px-4 py-4 font-mono text-xs text-gray-600">
+                                {d.created_at ? new Date(d.created_at).toLocaleDateString() : "—"}
+                                <div className="text-[10px] text-gray-400">
+                                  {d.created_at ? new Date(d.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : ""}
+                                </div>
+                              </td>
+
+                              {/* Actions */}
+                              <td className="px-4 py-4 text-right">
+                                <button
+                                  onClick={() => setDeleteDeployModal(d)}
+                                  disabled={d.status === "deleting"}
+                                  className="btn-brutal bg-red-100 text-[#e63946] border-[#e63946] hover:bg-red-200 py-1.5 px-3 text-xs disabled:opacity-40 disabled:cursor-not-allowed"
+                                  title="Delete this deployment and remove server resources"
+                                >
+                                  <Trash2 className="h-3.5 w-3.5" strokeWidth={2.5} />
+                                  Delete
+                                </button>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </>
             )}
           </div>
         )}
 
         {/* Tab 2: User Accounts Management */}
         {activeTab === "users" && (
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             {/* Search and Filters */}
-            <div className="card-brutal p-4">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div className="relative flex-1">
+            <div className="card-brutal p-3 sm:p-4">
+              <div className="flex flex-col gap-3">
+                <div className="relative w-full">
                   <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
                   <input
                     type="text"
                     value={userSearch}
                     onChange={(e) => setUserSearch(e.target.value)}
                     placeholder="Search users by username or ID..."
-                    className="input-brutal pl-10 py-2.5 text-sm"
+                    className="input-brutal pl-10 py-2 sm:py-2.5 text-xs sm:text-sm"
                   />
                 </div>
 
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-xs font-bold uppercase text-gray-500">Role:</span>
+                <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 pt-0.5 no-scrollbar">
+                  <span className="text-[11px] font-bold uppercase text-gray-500 shrink-0 mr-1">Role:</span>
                   {["all", "admin", "user"].map((role) => (
                     <button
                       key={role}
                       onClick={() => setUserRoleFilter(role)}
-                      className={`rounded-lg border-2 border-[#172a45] px-3 py-1 text-xs font-black uppercase tracking-wider transition-all ${
+                      className={`shrink-0 rounded-lg border-2 border-[#172a45] px-2.5 sm:px-3 py-1 text-[10px] sm:text-xs font-black uppercase tracking-wider transition-all ${
                         userRoleFilter === role
                           ? "bg-[#172a45] text-white shadow-[2px_2px_0_#e63946]"
                           : "bg-white text-gray-700 hover:bg-gray-100"
                       }`}
                     >
-                      {role === "all" ? "All Users" : role === "admin" ? "Admins" : "Standard Users"}
+                      {role === "all" ? "All Users" : role === "admin" ? "Admins" : "Users"}
                     </button>
                   ))}
                 </div>
               </div>
             </div>
 
-            {/* Users Table */}
+            {/* Users Content */}
             {isLoading ? (
-              <div className="card-brutal flex min-h-[300px] items-center justify-center p-12">
+              <div className="card-brutal flex min-h-[250px] items-center justify-center p-8 sm:p-12">
                 <div className="text-center">
-                  <Loader2 className="mx-auto h-8 w-8 animate-spin text-[#172a45]" strokeWidth={2.5} />
-                  <p className="mt-3 text-sm font-bold uppercase tracking-wider text-gray-600">
+                  <Loader2 className="mx-auto h-7 w-7 sm:h-8 sm:w-8 animate-spin text-[#172a45]" strokeWidth={2.5} />
+                  <p className="mt-3 text-xs sm:text-sm font-bold uppercase tracking-wider text-gray-600">
                     Loading user records...
                   </p>
                 </div>
               </div>
             ) : filteredUsers.length === 0 ? (
-              <div className="card-brutal p-12 text-center">
-                <Users className="mx-auto h-12 w-12 text-gray-400" strokeWidth={1.5} />
-                <h3 className="mt-3 text-lg font-bold text-[#172a45]">No users found</h3>
-                <p className="mt-1 text-sm font-medium text-gray-500">
+              <div className="card-brutal p-8 sm:p-12 text-center">
+                <Users className="mx-auto h-10 w-10 sm:h-12 sm:w-12 text-gray-400" strokeWidth={1.5} />
+                <h3 className="mt-3 text-base sm:text-lg font-bold text-[#172a45]">No users found</h3>
+                <p className="mt-1 text-xs sm:text-sm font-medium text-gray-500">
                   {userSearch || userRoleFilter !== "all"
                     ? "Try adjusting your search terms or role filter."
                     : "No users exist in the database."}
                 </p>
               </div>
             ) : (
-              <div className="card-brutal overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-sm">
-                    <thead className="border-b-2 border-[#172a45] bg-[#172a45] text-xs font-black uppercase tracking-wider text-white">
-                      <tr>
-                        <th className="px-4 py-3.5">User ID</th>
-                        <th className="px-4 py-3.5">Username</th>
-                        <th className="px-4 py-3.5">Role</th>
-                        <th className="px-4 py-3.5">Created At</th>
-                        <th className="px-4 py-3.5">Deployments</th>
-                        <th className="px-4 py-3.5 text-right">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y-2 divide-[#172a45]/10">
-                      {filteredUsers.map((u) => {
-                        const isCurrentAdmin = u.username === adminUsername;
-                        return (
-                          <tr key={u.id} className="hover:bg-gray-50/80 transition-colors">
-                            {/* ID */}
-                            <td className="px-4 py-4 font-mono font-bold text-gray-700">
-                              #{u.id}
-                            </td>
-
-                            {/* Username */}
-                            <td className="px-4 py-4">
-                              <div className="flex items-center gap-2">
-                                <span className="font-bold text-black text-base">{u.username}</span>
-                                {isCurrentAdmin && (
-                                  <span className="rounded bg-[#f6c445] border border-[#172a45] px-1.5 py-0.5 text-[10px] font-black uppercase text-[#172a45]">
-                                    You
-                                  </span>
-                                )}
-                              </div>
-                            </td>
-
-                            {/* Role */}
-                            <td className="px-4 py-4">
-                              {u.is_admin ? (
-                                <span className="inline-flex items-center gap-1 rounded-lg border-2 border-[#172a45] bg-[#e63946] px-2.5 py-1 text-xs font-black uppercase tracking-wider text-white">
-                                  <Shield className="h-3 w-3" strokeWidth={3} />
-                                  Admin
-                                </span>
-                              ) : (
-                                <span className="inline-flex items-center gap-1 rounded-lg border-2 border-[#172a45] bg-gray-200 px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-gray-800">
-                                  User
+              <>
+                {/* Mobile Card List View (visible on < md screens) */}
+                <div className="space-y-3 md:hidden">
+                  {filteredUsers.map((u) => {
+                    const isCurrentAdmin = u.username === adminUsername;
+                    return (
+                      <div key={u.id} className="card-brutal p-4 space-y-3">
+                        {/* Top: ID, Username, Role */}
+                        <div className="flex items-start justify-between gap-2">
+                          <div>
+                            <div className="flex items-center gap-1.5">
+                              <span className="rounded border border-[#172a45] bg-gray-100 px-1.5 py-0.5 font-mono text-[10px] font-bold text-[#172a45]">
+                                #{u.id}
+                              </span>
+                              <h3 className="font-bold text-black text-base">{u.username}</h3>
+                              {isCurrentAdmin && (
+                                <span className="rounded bg-[#f6c445] border border-[#172a45] px-1 py-0.2 text-[9px] font-black uppercase text-[#172a45]">
+                                  You
                                 </span>
                               )}
-                            </td>
-
-                            {/* Created At */}
-                            <td className="px-4 py-4 font-mono text-xs text-gray-600">
-                              {u.created_at ? new Date(u.created_at).toLocaleDateString() : "—"}
-                              <div className="text-[10px] text-gray-400">
-                                {u.created_at ? new Date(u.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : ""}
-                              </div>
-                            </td>
-
-                            {/* Deployment Count */}
-                            <td className="px-4 py-4">
-                              <span className="inline-flex items-center justify-center rounded-md border border-[#172a45] bg-white px-2 py-0.5 font-mono text-xs font-bold text-[#172a45]">
-                                {u.deployment_count ?? 0}
+                            </div>
+                            <p className="text-[11px] font-mono text-gray-500 mt-0.5">
+                              Joined: {u.created_at ? new Date(u.created_at).toLocaleDateString() : "—"}
+                            </p>
+                          </div>
+                          <div>
+                            {u.is_admin ? (
+                              <span className="inline-flex items-center gap-1 rounded-lg border-2 border-[#172a45] bg-[#e63946] px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-white">
+                                <Shield className="h-2.5 w-2.5" strokeWidth={3} />
+                                Admin
                               </span>
-                            </td>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 rounded-lg border-2 border-[#172a45] bg-gray-200 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-gray-800">
+                                User
+                              </span>
+                            )}
+                          </div>
+                        </div>
 
-                            {/* Actions */}
-                            <td className="px-4 py-4 text-right">
-                              <div className="flex items-center justify-end gap-2">
-                                <button
-                                  onClick={() => openEditUser(u)}
-                                  className="btn-brutal bg-[#f6c445] text-[#172a45] hover:bg-yellow-300 py-1.5 px-3 text-xs"
-                                  title="Edit user details or reset password"
-                                >
-                                  <Edit className="h-3.5 w-3.5" strokeWidth={2.5} />
-                                  Edit
-                                </button>
+                        {/* Deployments counter */}
+                        <div className="flex items-center justify-between text-xs border-y-2 border-[#172a45]/10 py-2">
+                          <span className="font-bold uppercase text-gray-500">Deployments</span>
+                          <span className="inline-flex items-center justify-center rounded-md border border-[#172a45] bg-white px-2 py-0.5 font-mono text-xs font-bold text-[#172a45]">
+                            {u.deployment_count ?? 0}
+                          </span>
+                        </div>
 
-                                <button
-                                  onClick={() => {
-                                    setDeleteUserModal(u);
-                                    setDeleteUserError("");
-                                  }}
-                                  disabled={isCurrentAdmin}
-                                  className="btn-brutal bg-red-100 text-[#e63946] border-[#e63946] hover:bg-red-200 py-1.5 px-3 text-xs disabled:opacity-40 disabled:cursor-not-allowed"
-                                  title={isCurrentAdmin ? "You cannot delete your own account" : "Delete user"}
-                                >
-                                  <Trash2 className="h-3.5 w-3.5" strokeWidth={2.5} />
-                                  Delete
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+                        {/* Actions */}
+                        <div className="grid grid-cols-2 gap-2 pt-1">
+                          <button
+                            onClick={() => openEditUser(u)}
+                            className="btn-brutal bg-[#f6c445] text-[#172a45] hover:bg-yellow-300 py-2 text-xs"
+                          >
+                            <Edit className="h-3.5 w-3.5" strokeWidth={2.5} />
+                            Edit User
+                          </button>
+
+                          <button
+                            onClick={() => {
+                              setDeleteUserModal(u);
+                              setDeleteUserError("");
+                            }}
+                            disabled={isCurrentAdmin}
+                            className="btn-brutal bg-red-100 text-[#e63946] border-[#e63946] hover:bg-red-200 py-2 text-xs disabled:opacity-40"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" strokeWidth={2.5} />
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-              </div>
+
+                {/* Desktop Table View (visible on md+ screens) */}
+                <div className="hidden md:block card-brutal overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-sm">
+                      <thead className="border-b-2 border-[#172a45] bg-[#172a45] text-xs font-black uppercase tracking-wider text-white">
+                        <tr>
+                          <th className="px-4 py-3.5">User ID</th>
+                          <th className="px-4 py-3.5">Username</th>
+                          <th className="px-4 py-3.5">Role</th>
+                          <th className="px-4 py-3.5">Created At</th>
+                          <th className="px-4 py-3.5">Deployments</th>
+                          <th className="px-4 py-3.5 text-right">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y-2 divide-[#172a45]/10">
+                        {filteredUsers.map((u) => {
+                          const isCurrentAdmin = u.username === adminUsername;
+                          return (
+                            <tr key={u.id} className="hover:bg-gray-50/80 transition-colors">
+                              {/* ID */}
+                              <td className="px-4 py-4 font-mono font-bold text-gray-700">
+                                #{u.id}
+                              </td>
+
+                              {/* Username */}
+                              <td className="px-4 py-4">
+                                <div className="flex items-center gap-2">
+                                  <span className="font-bold text-black text-base">{u.username}</span>
+                                  {isCurrentAdmin && (
+                                    <span className="rounded bg-[#f6c445] border border-[#172a45] px-1.5 py-0.5 text-[10px] font-black uppercase text-[#172a45]">
+                                      You
+                                    </span>
+                                  )}
+                                </div>
+                              </td>
+
+                              {/* Role */}
+                              <td className="px-4 py-4">
+                                {u.is_admin ? (
+                                  <span className="inline-flex items-center gap-1 rounded-lg border-2 border-[#172a45] bg-[#e63946] px-2.5 py-1 text-xs font-black uppercase tracking-wider text-white">
+                                    <Shield className="h-3 w-3" strokeWidth={3} />
+                                    Admin
+                                  </span>
+                                ) : (
+                                  <span className="inline-flex items-center gap-1 rounded-lg border-2 border-[#172a45] bg-gray-200 px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-gray-800">
+                                    User
+                                  </span>
+                                )}
+                              </td>
+
+                              {/* Created At */}
+                              <td className="px-4 py-4 font-mono text-xs text-gray-600">
+                                {u.created_at ? new Date(u.created_at).toLocaleDateString() : "—"}
+                                <div className="text-[10px] text-gray-400">
+                                  {u.created_at ? new Date(u.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : ""}
+                                </div>
+                              </td>
+
+                              {/* Deployment Count */}
+                              <td className="px-4 py-4">
+                                <span className="inline-flex items-center justify-center rounded-md border border-[#172a45] bg-white px-2 py-0.5 font-mono text-xs font-bold text-[#172a45]">
+                                  {u.deployment_count ?? 0}
+                                </span>
+                              </td>
+
+                              {/* Actions */}
+                              <td className="px-4 py-4 text-right">
+                                <div className="flex items-center justify-end gap-2">
+                                  <button
+                                    onClick={() => openEditUser(u)}
+                                    className="btn-brutal bg-[#f6c445] text-[#172a45] hover:bg-yellow-300 py-1.5 px-3 text-xs"
+                                    title="Edit user details or reset password"
+                                  >
+                                    <Edit className="h-3.5 w-3.5" strokeWidth={2.5} />
+                                    Edit
+                                  </button>
+
+                                  <button
+                                    onClick={() => {
+                                      setDeleteUserModal(u);
+                                      setDeleteUserError("");
+                                    }}
+                                    disabled={isCurrentAdmin}
+                                    className="btn-brutal bg-red-100 text-[#e63946] border-[#e63946] hover:bg-red-200 py-1.5 px-3 text-xs disabled:opacity-40 disabled:cursor-not-allowed"
+                                    title={isCurrentAdmin ? "You cannot delete your own account" : "Delete user"}
+                                  >
+                                    <Trash2 className="h-3.5 w-3.5" strokeWidth={2.5} />
+                                    Delete
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </>
             )}
           </div>
         )}
@@ -769,41 +940,42 @@ export default function AdminDashboardPage() {
 
       {/* MODAL: Delete Deployment Confirmation */}
       {deleteDeployModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
-          <div className="card-brutal w-full max-w-md p-6 sm:p-8 animate-in fade-in zoom-in duration-150">
-            <div className="flex items-center justify-between border-b-2 border-[#172a45] pb-4 mb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-3 sm:p-4 backdrop-blur-sm">
+          <div className="card-brutal w-full max-w-md max-h-[90vh] overflow-y-auto p-5 sm:p-7 animate-in fade-in zoom-in duration-150">
+            <div className="flex items-center justify-between border-b-2 border-[#172a45] pb-3 mb-4">
               <div className="flex items-center gap-2">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg border-2 border-[#172a45] bg-[#e63946]">
-                  <Trash2 className="h-5 w-5 text-white" strokeWidth={2.5} />
+                <div className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg border-2 border-[#172a45] bg-[#e63946]">
+                  <Trash2 className="h-4 w-4 sm:h-5 sm:w-5 text-white" strokeWidth={2.5} />
                 </div>
-                <h3 className="text-lg font-black text-[#172a45]">Delete Deployment</h3>
+                <h3 className="text-base sm:text-lg font-black text-[#172a45]">Delete Deployment</h3>
               </div>
               <button
                 onClick={() => setDeleteDeployModal(null)}
                 className="rounded p-1 hover:bg-gray-100"
+                aria-label="Close modal"
               >
                 <X className="h-5 w-5 text-gray-600" />
               </button>
             </div>
 
-            <p className="text-sm font-bold text-gray-700">
+            <p className="text-xs sm:text-sm font-bold text-gray-700">
               Are you sure you want to delete deployment <span className="font-mono text-[#e63946]">#{deleteDeployModal.id} ({deleteDeployModal.image_name})</span>?
             </p>
 
-            <div className="mt-4 rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 p-3.5 text-xs font-medium text-gray-600">
+            <div className="mt-3 rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 p-3 text-xs font-medium text-gray-600">
               <p className="font-bold text-[#172a45] uppercase mb-1">Permanent Removal Actions:</p>
               <ul className="list-disc pl-4 space-y-1">
-                <li>Stops and removes Docker container and image</li>
+                <li>Stops and removes Docker container & image</li>
                 <li>Cleans up Nginx reverse proxy configuration</li>
                 <li>Removes deployment workspace directory on host</li>
               </ul>
             </div>
 
-            <div className="mt-6 flex items-center justify-end gap-3">
+            <div className="mt-5 flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-2 sm:gap-3">
               <button
                 type="button"
                 onClick={() => setDeleteDeployModal(null)}
-                className="btn-brutal bg-white text-gray-700 hover:bg-gray-100 py-2.5 px-4"
+                className="btn-brutal w-full sm:w-auto bg-white text-gray-700 hover:bg-gray-100 py-2 sm:py-2.5 px-4 text-xs sm:text-sm"
               >
                 Cancel
               </button>
@@ -811,7 +983,7 @@ export default function AdminDashboardPage() {
                 type="button"
                 onClick={confirmDeleteDeployment}
                 disabled={isDeletingDeploy}
-                className="btn-brutal bg-[#e63946] text-white hover:bg-[#c92f3b] py-2.5 px-4 disabled:opacity-50"
+                className="btn-brutal w-full sm:w-auto bg-[#e63946] text-white hover:bg-[#c92f3b] py-2 sm:py-2.5 px-4 text-xs sm:text-sm disabled:opacity-50"
               >
                 {isDeletingDeploy ? (
                   <>
@@ -829,15 +1001,15 @@ export default function AdminDashboardPage() {
 
       {/* MODAL: Edit User */}
       {editUserModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
-          <div className="card-brutal w-full max-w-lg p-6 sm:p-8 animate-in fade-in zoom-in duration-150">
-            <div className="flex items-center justify-between border-b-2 border-[#172a45] pb-4 mb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-3 sm:p-4 backdrop-blur-sm">
+          <div className="card-brutal w-full max-w-lg max-h-[90vh] overflow-y-auto p-5 sm:p-7 animate-in fade-in zoom-in duration-150">
+            <div className="flex items-center justify-between border-b-2 border-[#172a45] pb-3 mb-4">
               <div className="flex items-center gap-2">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg border-2 border-[#172a45] bg-[#f6c445]">
-                  <Edit className="h-5 w-5 text-[#172a45]" strokeWidth={2.5} />
+                <div className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg border-2 border-[#172a45] bg-[#f6c445]">
+                  <Edit className="h-4 w-4 sm:h-5 sm:w-5 text-[#172a45]" strokeWidth={2.5} />
                 </div>
                 <div>
-                  <h3 className="text-lg font-black text-[#172a45]">
+                  <h3 className="text-base sm:text-lg font-black text-[#172a45]">
                     Edit User #{editUserModal.id}
                   </h3>
                   <p className="text-xs font-bold text-gray-500">
@@ -848,19 +1020,20 @@ export default function AdminDashboardPage() {
               <button
                 onClick={() => setEditUserModal(null)}
                 className="rounded p-1 hover:bg-gray-100"
+                aria-label="Close modal"
               >
                 <X className="h-5 w-5 text-gray-600" />
               </button>
             </div>
 
             {editUserError && (
-              <div className="mb-4 flex items-center gap-2 rounded-xl border-2 border-[#e63946] bg-red-100 p-3 text-xs font-bold text-[#e63946]">
+              <div className="mb-4 flex items-center gap-2 rounded-xl border-2 border-[#e63946] bg-red-100 p-2.5 sm:p-3 text-xs font-bold text-[#e63946]">
                 <AlertTriangle className="h-4 w-4 shrink-0" />
                 <span>{editUserError}</span>
               </div>
             )}
 
-            <form onSubmit={handleUpdateUser} className="space-y-4">
+            <form onSubmit={handleUpdateUser} className="space-y-3.5 sm:space-y-4">
               <InputField
                 label="Username"
                 id="edit-username"
@@ -882,20 +1055,20 @@ export default function AdminDashboardPage() {
               />
 
               {/* Administrator Toggle */}
-              <div className="rounded-xl border-2 border-[#172a45] bg-gray-50 p-4">
-                <label className="flex items-start gap-3 cursor-pointer">
+              <div className="rounded-xl border-2 border-[#172a45] bg-gray-50 p-3 sm:p-4">
+                <label className="flex items-start gap-2.5 sm:gap-3 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={editIsAdmin}
                     onChange={(e) => setEditIsAdmin(e.target.checked)}
                     disabled={editUserModal.username === adminUsername}
-                    className="mt-1 h-5 w-5 rounded border-2 border-[#172a45] text-[#e63946] focus:ring-0"
+                    className="mt-0.5 h-4 w-4 sm:h-5 sm:w-5 rounded border-2 border-[#172a45] text-[#e63946] focus:ring-0"
                   />
                   <div>
-                    <span className="text-sm font-black uppercase tracking-wide text-[#172a45]">
+                    <span className="text-xs sm:text-sm font-black uppercase tracking-wide text-[#172a45]">
                       Grant Administrator Privileges
                     </span>
-                    <p className="text-xs font-medium text-gray-600 mt-0.5">
+                    <p className="text-[11px] sm:text-xs font-medium text-gray-600 mt-0.5">
                       Allows this user to access the admin portal and manage all platform data.
                       {editUserModal.username === adminUsername && (
                         <span className="block mt-1 font-bold text-[#e63946]">
@@ -907,18 +1080,18 @@ export default function AdminDashboardPage() {
                 </label>
               </div>
 
-              <div className="mt-6 flex items-center justify-end gap-3 pt-2">
+              <div className="mt-5 flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-2 sm:gap-3 pt-2">
                 <button
                   type="button"
                   onClick={() => setEditUserModal(null)}
-                  className="btn-brutal bg-white text-gray-700 hover:bg-gray-100 py-2.5 px-4"
+                  className="btn-brutal w-full sm:w-auto bg-white text-gray-700 hover:bg-gray-100 py-2 sm:py-2.5 px-4 text-xs sm:text-sm"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isUpdatingUser}
-                  className="btn-brutal bg-[#1d5fa7] text-white hover:bg-[#174f8c] py-2.5 px-5 disabled:opacity-50"
+                  className="btn-brutal w-full sm:w-auto bg-[#1d5fa7] text-white hover:bg-[#174f8c] py-2 sm:py-2.5 px-5 text-xs sm:text-sm disabled:opacity-50"
                 >
                   {isUpdatingUser ? (
                     <>
@@ -937,36 +1110,37 @@ export default function AdminDashboardPage() {
 
       {/* MODAL: Delete User Confirmation */}
       {deleteUserModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
-          <div className="card-brutal w-full max-w-md p-6 sm:p-8 animate-in fade-in zoom-in duration-150">
-            <div className="flex items-center justify-between border-b-2 border-[#172a45] pb-4 mb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-3 sm:p-4 backdrop-blur-sm">
+          <div className="card-brutal w-full max-w-md max-h-[90vh] overflow-y-auto p-5 sm:p-7 animate-in fade-in zoom-in duration-150">
+            <div className="flex items-center justify-between border-b-2 border-[#172a45] pb-3 mb-4">
               <div className="flex items-center gap-2">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg border-2 border-[#172a45] bg-[#e63946]">
-                  <Trash2 className="h-5 w-5 text-white" strokeWidth={2.5} />
+                <div className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg border-2 border-[#172a45] bg-[#e63946]">
+                  <Trash2 className="h-4 w-4 sm:h-5 sm:w-5 text-white" strokeWidth={2.5} />
                 </div>
-                <h3 className="text-lg font-black text-[#172a45]">Delete User Account</h3>
+                <h3 className="text-base sm:text-lg font-black text-[#172a45]">Delete User Account</h3>
               </div>
               <button
                 onClick={() => setDeleteUserModal(null)}
                 className="rounded p-1 hover:bg-gray-100"
+                aria-label="Close modal"
               >
                 <X className="h-5 w-5 text-gray-600" />
               </button>
             </div>
 
             {deleteUserError && (
-              <div className="mb-4 flex items-center gap-2 rounded-xl border-2 border-[#e63946] bg-red-100 p-3 text-xs font-bold text-[#e63946]">
+              <div className="mb-4 flex items-center gap-2 rounded-xl border-2 border-[#e63946] bg-red-100 p-2.5 sm:p-3 text-xs font-bold text-[#e63946]">
                 <AlertTriangle className="h-4 w-4 shrink-0" />
                 <span>{deleteUserError}</span>
               </div>
             )}
 
-            <p className="text-sm font-bold text-gray-700">
+            <p className="text-xs sm:text-sm font-bold text-gray-700">
               Are you sure you want to permanently delete user account{" "}
               <span className="font-mono text-[#e63946]">"{deleteUserModal.username}"</span> (UID #{deleteUserModal.id})?
             </p>
 
-            <div className="mt-4 rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 p-3.5 text-xs font-medium text-gray-600">
+            <div className="mt-3 rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 p-3 text-xs font-medium text-gray-600">
               <p className="font-bold text-[#172a45] uppercase mb-1">Prerequisites & Rules:</p>
               <ul className="list-disc pl-4 space-y-1">
                 <li>The user must have no active deployments. Delete active deployments first.</li>
@@ -975,11 +1149,11 @@ export default function AdminDashboardPage() {
               </ul>
             </div>
 
-            <div className="mt-6 flex items-center justify-end gap-3">
+            <div className="mt-5 flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-2 sm:gap-3">
               <button
                 type="button"
                 onClick={() => setDeleteUserModal(null)}
-                className="btn-brutal bg-white text-gray-700 hover:bg-gray-100 py-2.5 px-4"
+                className="btn-brutal w-full sm:w-auto bg-white text-gray-700 hover:bg-gray-100 py-2 sm:py-2.5 px-4 text-xs sm:text-sm"
               >
                 Cancel
               </button>
@@ -987,7 +1161,7 @@ export default function AdminDashboardPage() {
                 type="button"
                 onClick={confirmDeleteUser}
                 disabled={isDeletingUser}
-                className="btn-brutal bg-[#e63946] text-white hover:bg-[#c92f3b] py-2.5 px-4 disabled:opacity-50"
+                className="btn-brutal w-full sm:w-auto bg-[#e63946] text-white hover:bg-[#c92f3b] py-2 sm:py-2.5 px-4 text-xs sm:text-sm disabled:opacity-50"
               >
                 {isDeletingUser ? (
                   <>

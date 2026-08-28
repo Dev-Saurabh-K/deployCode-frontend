@@ -4,6 +4,8 @@ import {
   CheckCircle2,
   XCircle,
   ExternalLink,
+  Globe2,
+  LockKeyhole,
   Trash2,
 } from "lucide-react";
 
@@ -89,6 +91,7 @@ export default function DeployStatusCard({ deployment, onReset }) {
 
   const config = STATUS_CONFIG[deployment.status] || STATUS_CONFIG.pending;
   const StatusIcon = config.icon;
+  const isPrivate = deployment.repo_visibility === "private";
 
   const activeStep =
     deployment.status === "pending"
@@ -124,6 +127,15 @@ export default function DeployStatusCard({ deployment, onReset }) {
         <InfoRow label="App Name" value={deployment.image_name} />
         <InfoRow label="Port" value={deployment.port || "Auto-assigned"} />
         <InfoRow label="Repo" value={deployment.repo_url} isUrl />
+        <div className="flex items-center justify-between text-sm">
+          <span className="font-bold uppercase tracking-wide text-gray-500">
+            Visibility
+          </span>
+          <span className={`inline-flex items-center gap-1 rounded-md border border-black px-2 py-0.5 text-xs font-black uppercase ${isPrivate ? "bg-red-100 text-red-700" : "bg-emerald-100 text-emerald-800"}`}>
+            {isPrivate ? <LockKeyhole className="h-3 w-3" /> : <Globe2 className="h-3 w-3" />}
+            {isPrivate ? "Private" : "Public"}
+          </span>
+        </div>
       </div>
 
       {/* Pipeline Steps */}

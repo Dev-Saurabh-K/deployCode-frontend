@@ -21,7 +21,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4">
+    <div className="flex min-h-screen items-center justify-center pt-20 sm:pt-24 pb-12 px-4">
       {/* Decorative shapes */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <div className="absolute -left-10 top-20 h-32 w-32 rotate-12 rounded-2xl border-2 border-black bg-yellow-300 opacity-30" />
@@ -32,27 +32,27 @@ export default function LoginPage() {
 
       <div className="relative w-full max-w-md">
         {/* Logo */}
-        <div className="mb-8 text-center">
-          <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-full border-2 border-[#172a45] bg-[#1d5fa7] shadow-[4px_4px_0_#172a45]">
-            <Rocket className="h-7 w-7 text-white" strokeWidth={2.5} />
+        <div className="mb-6 sm:mb-8 text-center">
+          <div className="mb-3 sm:mb-4 inline-flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-full border-2 border-[#172a45] bg-[#1d5fa7] shadow-[4px_4px_0_#172a45]">
+            <Rocket className="h-6 w-6 sm:h-7 sm:w-7 text-white" strokeWidth={2.5} />
           </div>
-          <h1 className="text-3xl font-bold tracking-tight text-black">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-black">
             Welcome back!
           </h1>
-          <p className="mt-1 text-base font-medium text-gray-600">
+          <p className="mt-1 text-sm sm:text-base font-medium text-gray-600">
             Sign in to your deployCode account
           </p>
         </div>
 
         {/* Card */}
-        <div className="card-brutal p-6 sm:p-8">
+        <div className="card-brutal p-5 sm:p-8">
           {error && (
-            <div className="mb-4 rounded-xl border-2 border-red-500 bg-red-100 p-3 text-sm font-bold text-red-600 shadow-brutal-red">
+            <div className="mb-4 rounded-xl border-2 border-red-500 bg-red-100 p-3 text-xs sm:text-sm font-bold text-red-600 shadow-brutal-red">
               ⚠ {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
             <InputField
               label="Username"
               id="username"
@@ -83,7 +83,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="btn-brutal w-full bg-[#1d5fa7] text-white hover:bg-[#174f8c] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn-brutal w-full bg-[#1d5fa7] text-white hover:bg-[#174f8c] py-2.5 sm:py-3 text-xs sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? (
                 <>
@@ -96,8 +96,8 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <div className="mt-6 rounded-xl border-2 border-dashed border-gray-300 p-3 text-center">
-            <p className="text-sm font-medium text-gray-600">
+          <div className="mt-5 sm:mt-6 rounded-xl border-2 border-dashed border-gray-300 p-3 text-center">
+            <p className="text-xs sm:text-sm font-medium text-gray-600">
               Don't have an account?{" "}
               <Link
                 to="/register"
