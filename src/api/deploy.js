@@ -14,15 +14,20 @@ export async function getMyProjects() {
   return data;
 }
 
-export async function startNodeDeploy(imageName, repoUrl, port, environmentVariables = {}) {
+export async function startNodeDeploy(imageName, repoUrl, environmentVariables = {}, options = {}) {
+  const { startCommand } = options;
   const payload = {
     image_name: imageName,
     repo_url: repoUrl,
-    port: Number(port),
     environment_variables: environmentVariables,
   };
 
-  const routes = [`${API_BASE}/deploy/node`, `${API_BASE}/deploy/node/javascript`];
+  const trimmedCommand = typeof startCommand === "string" ? startCommand.trim() : "";
+  if (trimmedCommand) {
+    payload.start_command = trimmedCommand;
+  }
+
+  const routes = [`${API_BASE}/deploy/node/javascript`];
 
   let lastError = null;
   for (const url of routes) {
@@ -78,10 +83,10 @@ export async function startViteDeploy(imageName, repoUrl, environmentVariables =
 }
 
 export async function startDeploy(imageName, repoUrl, environmentVariables = {}, options = {}) {
-  const { deploymentType = "vite", port } = options;
+  const { deploymentType = "vite", startCommand } = options;
 
   if (deploymentType === "node") {
-    return startNodeDeploy(imageName, repoUrl, port, environmentVariables);
+    return startNodeDeploy(imageName, repoUrl, environmentVariables, { startCommand });
   }
 
   return startViteDeploy(imageName, repoUrl, environmentVariables);

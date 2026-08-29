@@ -58,19 +58,6 @@ function getRepoUrlError(repoUrl) {
   return "";
 }
 
-function getNodePortError(portValue) {
-  if (!portValue || !String(portValue).trim()) {
-    return "Enter a port for your Node app.";
-  }
-
-  const port = Number(portValue);
-  if (!Number.isInteger(port) || port < 1 || port > 65535) {
-    return "Use a valid port between 1 and 65535.";
-  }
-
-  return "";
-}
-
 const COMING_SOON_STACKS = [
   { name: "Next.js", type: "Frontend", icon: Code2, color: "bg-blue-200" },
   { name: "Vue.js", type: "Frontend", icon: Code2, color: "bg-emerald-200" },
@@ -86,8 +73,7 @@ export default function DeployPage() {
   const [repoUrl, setRepoUrl] = useState("");
   const [repoUrlError, setRepoUrlError] = useState("");
   const [deploymentType, setDeploymentType] = useState("vite");
-  const [nodePort, setNodePort] = useState("3000");
-  const [nodePortError, setNodePortError] = useState("");
+  const [nodeStartCommand, setNodeStartCommand] = useState("");
   const [repoVisibility, setRepoVisibility] = useState(null);
   const [environmentVariables, setEnvironmentVariables] = useState([]);
   const [isDeploying, setIsDeploying] = useState(false);
@@ -203,22 +189,13 @@ export default function DeployPage() {
       }
       setRepoUrlError("");
 
-      if (deploymentType === "node") {
-        const portError = getNodePortError(nodePort);
-        if (portError) {
-          setNodePortError(portError);
-          return;
-        }
-        setNodePortError("");
-      }
-
       const result = await startDeploy(
         appName,
         normalizedRepoUrl,
         getEnvironmentVariablesPayload(),
         {
           deploymentType,
-          port: deploymentType === "node" ? Number(nodePort) : undefined,
+          startCommand: deploymentType === "node" ? nodeStartCommand.trim() : undefined,
         }
       );
 
@@ -230,7 +207,7 @@ export default function DeployPage() {
         image_name: appName,
         repo_url: normalizedRepoUrl,
         repo_visibility: visibility,
-        port: result.port || (deploymentType === "node" ? Number(nodePort) : undefined),
+        port: result.port,
         deployment_type: deploymentType,
         status: "pending",
       });
@@ -240,7 +217,7 @@ export default function DeployPage() {
           image_name: appName,
           repo_url: normalizedRepoUrl,
           repo_visibility: visibility,
-          port: result.port || (deploymentType === "node" ? Number(nodePort) : undefined),
+          port: result.port,
           deployment_type: deploymentType,
           status: "pending",
         },
@@ -280,8 +257,7 @@ export default function DeployPage() {
     setRepoUrl("");
     setRepoUrlError("");
     setDeploymentType("vite");
-    setNodePort("3000");
-    setNodePortError("");
+    setNodeStartCommand("");
     setRepoVisibility(null);
     setEnvironmentVariables([]);
   };
@@ -437,22 +413,14 @@ export default function DeployPage() {
 
               {deploymentType === "node" && (
                 <InputField
-                  label="Node Port"
-                  id="nodePort"
-                  type="number"
-                  min="1"
-                  max="65535"
-                  value={nodePort}
-                  onChange={(e) => {
-                    setNodePort(e.target.value);
-                    if (nodePortError) setNodePortError(getNodePortError(e.target.value));
-                  }}
-                  onBlur={() => setNodePortError(getNodePortError(nodePort))}
-                  placeholder="3000"
+                  label="Start Command"
+                  id="nodeStartCommand"
+                  type="text"
+                  value={nodeStartCommand}
+                  onChange={(e) => setNodeStartCommand(e.target.value)}
+                  placeholder="npm start"
                   icon={Server}
-                  error={nodePortError}
-                  helperText="Choose an available port that your Node app listens on."
-                  required
+                  helperText="Optional. Example: npm start, node server.js, or yarn dev. Leave blank to use the repo's default start command."
                 />
               )}
 
@@ -572,7 +540,7 @@ export default function DeployPage() {
                 <li className="flex items-start gap-1.5">
                   <span className="mt-0.5 inline-block h-3.5 w-3.5 rounded border border-black bg-lime-400 text-center text-[9px] font-bold leading-3">✓</span>
                   {deploymentType === "node"
-                    ? "Choose a free host port for your Node.js service."
+                    ? "Set the command that starts your Node app, such as npm start."
                     : "Port is automatically assigned in range 10000–40000"}
                 </li>
                 <li className="flex items-start gap-1.5">
