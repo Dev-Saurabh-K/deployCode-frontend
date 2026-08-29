@@ -58,6 +58,19 @@ function getRepoUrlError(repoUrl) {
   return "";
 }
 
+function getNodePortError(portValue) {
+  if (!portValue || !String(portValue).trim()) {
+    return "Enter a port for your Node app.";
+  }
+
+  const port = Number(portValue);
+  if (!Number.isInteger(port) || port < 1 || port > 65535) {
+    return "Use a valid port between 1 and 65535.";
+  }
+
+  return "";
+}
+
 const COMING_SOON_STACKS = [
   { name: "Next.js", type: "Frontend", icon: Code2, color: "bg-blue-200" },
   { name: "Vue.js", type: "Frontend", icon: Code2, color: "bg-emerald-200" },
@@ -72,6 +85,9 @@ export default function DeployPage() {
   const [appNameError, setAppNameError] = useState("");
   const [repoUrl, setRepoUrl] = useState("");
   const [repoUrlError, setRepoUrlError] = useState("");
+  const [deploymentType, setDeploymentType] = useState("vite");
+  const [nodePort, setNodePort] = useState("3000");
+  const [nodePortError, setNodePortError] = useState("");
   const [repoVisibility, setRepoVisibility] = useState(null);
   const [environmentVariables, setEnvironmentVariables] = useState([]);
   const [isDeploying, setIsDeploying] = useState(false);
@@ -187,10 +203,23 @@ export default function DeployPage() {
       }
       setRepoUrlError("");
 
+      if (deploymentType === "node") {
+        const portError = getNodePortError(nodePort);
+        if (portError) {
+          setNodePortError(portError);
+          return;
+        }
+        setNodePortError("");
+      }
+
       const result = await startDeploy(
         appName,
         normalizedRepoUrl,
-        getEnvironmentVariablesPayload()
+        getEnvironmentVariablesPayload(),
+        {
+          deploymentType,
+          port: deploymentType === "node" ? Number(nodePort) : undefined,
+        }
       );
 
       const visibility = result.repo_visibility || "public";
@@ -201,6 +230,8 @@ export default function DeployPage() {
         image_name: appName,
         repo_url: normalizedRepoUrl,
         repo_visibility: visibility,
+        port: result.port || (deploymentType === "node" ? Number(nodePort) : undefined),
+        deployment_type: deploymentType,
         status: "pending",
       });
       setProjects((currentProjects) => [
@@ -209,6 +240,8 @@ export default function DeployPage() {
           image_name: appName,
           repo_url: normalizedRepoUrl,
           repo_visibility: visibility,
+          port: result.port || (deploymentType === "node" ? Number(nodePort) : undefined),
+          deployment_type: deploymentType,
           status: "pending",
         },
         ...currentProjects,
@@ -246,6 +279,9 @@ export default function DeployPage() {
     setAppNameError("");
     setRepoUrl("");
     setRepoUrlError("");
+    setDeploymentType("vite");
+    setNodePort("3000");
+    setNodePortError("");
     setRepoVisibility(null);
     setEnvironmentVariables([]);
   };
@@ -335,6 +371,36 @@ export default function DeployPage() {
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
+              <div className="rounded-xl border-2 border-dashed border-gray-400 bg-gray-50 p-3 sm:p-4">
+                <h3 className="mb-3 text-xs sm:text-sm font-bold uppercase tracking-wide text-black">
+                  Deployment Type
+                </h3>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  <button
+                    type="button"
+                    onClick={() => setDeploymentType("vite")}
+                    className={`btn-brutal w-full px-3 py-2.5 text-xs sm:text-sm font-bold ${
+                      deploymentType === "vite"
+                        ? "bg-lime-300 text-black"
+                        : "bg-white text-black hover:bg-gray-100"
+                    }`}
+                  >
+                    Vite + React
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setDeploymentType("node")}
+                    className={`btn-brutal w-full px-3 py-2.5 text-xs sm:text-sm font-bold ${
+                      deploymentType === "node"
+                        ? "bg-lime-300 text-black"
+                        : "bg-white text-black hover:bg-gray-100"
+                    }`}
+                  >
+                    Node.js
+                  </button>
+                </div>
+              </div>
+
               <InputField
                 label="App Name"
                 id="imageName"
@@ -345,7 +411,7 @@ export default function DeployPage() {
                   if (appNameError) setAppNameError(getAppNameError(value.trim()));
                 }}
                 onBlur={() => setAppNameError(getAppNameError(imageName.trim()))}
-                placeholder="my-react-app"
+                placeholder={deploymentType === "node" ? "my-node-api" : "my-react-app"}
                 icon={Box}
                 error={appNameError}
                 helperText="Lowercase, 1–63 characters. Use letters, numbers, and internal hyphens."
@@ -368,6 +434,27 @@ export default function DeployPage() {
                 helperText="Public GitHub repositories are supported. Private or unavailable repositories are rejected by the API."
                 required
               />
+
+              {deploymentType === "node" && (
+                <InputField
+                  label="Node Port"
+                  id="nodePort"
+                  type="number"
+                  min="1"
+                  max="65535"
+                  value={nodePort}
+                  onChange={(e) => {
+                    setNodePort(e.target.value);
+                    if (nodePortError) setNodePortError(getNodePortError(e.target.value));
+                  }}
+                  onBlur={() => setNodePortError(getNodePortError(nodePort))}
+                  placeholder="3000"
+                  icon={Server}
+                  error={nodePortError}
+                  helperText="Choose an available port that your Node app listens on."
+                  required
+                />
+              )}
 
               {repoVisibility && (
                 <div className={`flex items-start gap-3 rounded-xl border-2 p-3 text-xs font-bold ${repoVisibility === "public" ? "border-emerald-600 bg-emerald-100 text-emerald-800" : "border-red-500 bg-red-100 text-red-700"}`}>
@@ -461,7 +548,7 @@ export default function DeployPage() {
                   ) : (
                     <>
                       <Rocket className="h-4 w-4" strokeWidth={2.5} />
-                      Deploy App
+                      {deploymentType === "node" ? "Deploy Node App" : "Deploy App"}
                     </>
                   )}
                 </button>
@@ -484,7 +571,9 @@ export default function DeployPage() {
                 </li>
                 <li className="flex items-start gap-1.5">
                   <span className="mt-0.5 inline-block h-3.5 w-3.5 rounded border border-black bg-lime-400 text-center text-[9px] font-bold leading-3">✓</span>
-                  Port is automatically assigned in range 10000–40000
+                  {deploymentType === "node"
+                    ? "Choose a free host port for your Node.js service."
+                    : "Port is automatically assigned in range 10000–40000"}
                 </li>
                 <li className="flex items-start gap-1.5">
                   <span className="mt-0.5 inline-block h-3.5 w-3.5 rounded border border-black bg-lime-400 text-center text-[9px] font-bold leading-3">✓</span>
